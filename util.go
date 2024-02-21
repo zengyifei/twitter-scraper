@@ -342,7 +342,6 @@ func parseProfile(user legacyUser) Profile {
 		FollowersCount: user.FollowersCount,
 		FollowingCount: user.FavouritesCount,
 		FriendsCount:   user.FriendsCount,
-		IsPrivate:      user.Protected,
 		IsVerified:     user.Verified,
 		LikesCount:     user.FavouritesCount,
 		ListedCount:    user.ListedCount,
@@ -353,6 +352,8 @@ func parseProfile(user legacyUser) Profile {
 		URL:            "https://twitter.com/" + user.ScreenName,
 		UserID:         user.IDStr,
 		Username:       user.ScreenName,
+		FollowedBy:     user.FollowedBy,
+		Following:      user.Following,
 	}
 
 	tm, err := time.Parse(time.RubyDate, user.CreatedAt)
@@ -363,6 +364,43 @@ func parseProfile(user legacyUser) Profile {
 
 	if len(user.Entities.URL.Urls) > 0 {
 		profile.Website = user.Entities.URL.Urls[0].ExpandedURL
+	}
+
+	return profile
+}
+
+func parseProfileV2(user userResult) Profile {
+	u := user.Legacy
+	profile := Profile{
+		Avatar:         u.ProfileImageURLHTTPS,
+		Banner:         u.ProfileBannerURL,
+		Biography:      u.Description,
+		FollowersCount: u.FollowersCount,
+		FollowingCount: u.FavouritesCount,
+		FriendsCount:   u.FriendsCount,
+		IsVerified:     u.Verified,
+		LikesCount:     u.FavouritesCount,
+		ListedCount:    u.ListedCount,
+		Location:       u.Location,
+		Name:           u.Name,
+		PinnedTweetIDs: u.PinnedTweetIdsStr,
+		TweetsCount:    u.StatusesCount,
+		URL:            "https://twitter.com/" + u.ScreenName,
+		UserID:         user.ID,
+		Username:       u.ScreenName,
+		Sensitive:      u.PossiblySensitive,
+		Following:      u.Following,
+		FollowedBy:     u.FollowedBy,
+	}
+
+	tm, err := time.Parse(time.RubyDate, u.CreatedAt)
+	if err == nil {
+		tm = tm.UTC()
+		profile.Joined = &tm
+	}
+
+	if len(u.Entities.URL.Urls) > 0 {
+		profile.Website = u.Entities.URL.Urls[0].ExpandedURL
 	}
 
 	return profile
