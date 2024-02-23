@@ -1,6 +1,10 @@
 package twitterscraper
 
 import (
+	"bytes"
+	"encoding/json"
+	"errors"
+	"io"
 	"net/url"
 	"strings"
 	"time"
@@ -139,4 +143,43 @@ func (s *Scraper) FetchScheduledTweets() ([]*ScheduledTweet, error) {
 
 	tweets := timeline.parseTweets()
 	return tweets, nil
+}
+
+// DeleteScheduledTweet removes tweet from scheduled.
+func (s *Scraper) DeleteScheduledTweet(id string) error {
+	req, err := s.newRequest("POST", "https://twitter.com/i/api/graphql/CTOVqej0JBXAZSwkp1US0g/DeleteScheduledTweet")
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("content-type", "application/json")
+
+	variables := map[string]interface{}{
+		"scheduled_tweet_id": id,
+	}
+
+	body := map[string]interface{}{
+		"variables": variables,
+		"queryId":   "CTOVqej0JBXAZSwkp1US0g",
+	}
+
+	b, _ := json.Marshal(body)
+	req.Body = io.NopCloser(bytes.NewReader(b))
+
+	var response struct {
+		Data struct {
+			Status string `json:"scheduledtweet_delete"`
+		} `json:"data"`
+	}
+
+	err = s.RequestAPI(req, &response)
+	if err != nil {
+		return err
+	}
+
+	if response.Data.Status == "Done" {
+		return nil
+	}
+
+	return errors.New("scheduled tweet wasn't removed")
 }
