@@ -183,3 +183,56 @@ func (s *Scraper) DeleteScheduledTweet(id string) error {
 
 	return errors.New("scheduled tweet wasn't removed")
 }
+
+// CreateScheduledTweet schedule new tweet.
+func (s *Scraper) CreateScheduledTweet(text string, date time.Time) (string, error) {
+	if date.Unix() <= time.Now().Unix() {
+		return "", errors.New("date can't be in past")
+	}
+
+	req, err := s.newRequest("POST", "https://twitter.com/i/api/graphql/LCVzRQGxOaGnOnYH01NQXg/CreateScheduledTweet")
+	if err != nil {
+		return "", err
+	}
+
+	req.Header.Set("content-type", "application/json")
+
+	post_tweet_request := map[string]interface{}{
+		"auto_populate_reply_metadata": false,
+		"status":                       text,
+		"exclude_reply_user_ids":       []string{},
+		"media_ids":                    []string{},
+	}
+
+	variables := map[string]interface{}{
+		"post_tweet_request": post_tweet_request,
+		"execute_at":         date.Unix(),
+	}
+
+	body := map[string]interface{}{
+		"variables": variables,
+		"queryId":   "LCVzRQGxOaGnOnYH01NQXg",
+	}
+
+	b, _ := json.Marshal(body)
+	req.Body = io.NopCloser(bytes.NewReader(b))
+
+	var response struct {
+		Data struct {
+			Tweet struct {
+				ID string `json:"rest_id"`
+			} `json:"tweet"`
+		} `json:"data"`
+	}
+
+	err = s.RequestAPI(req, &response)
+	if err != nil {
+		return "", err
+	}
+
+	if response.Data.Tweet.ID != "" {
+		return response.Data.Tweet.ID, nil
+	}
+
+	return "", errors.New("tweet wasn't scheduled")
+}

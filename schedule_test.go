@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"testing"
+	"time"
 )
 
 func TestFetchScheduledTweets(t *testing.T) {
@@ -16,8 +17,23 @@ func TestFetchScheduledTweets(t *testing.T) {
 	fmt.Println(string(b))
 }
 
-func TestDeleteScheduledTweets(t *testing.T) {
-	if err := testScraper.DeleteScheduledTweet("1760827700724355072"); err != nil {
+var id string
+
+func TestCreateScheduledTweets(t *testing.T) {
+	var err error
+	id, err = testScraper.CreateScheduledTweet("new tweet", time.Now().Add(time.Hour*24*31))
+	if err != nil {
 		t.Error(err)
+	}
+}
+
+func TestDeleteScheduledTweets(t *testing.T) {
+	if id == "" {
+		t.Skip("run TestCreateScheduledTweets before")
+	}
+	if err := testScraper.DeleteScheduledTweet(id); err != nil {
+		t.Error(err)
+	} else {
+		id = ""
 	}
 }
