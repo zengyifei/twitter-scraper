@@ -80,6 +80,16 @@ type (
 		Error error
 	}
 
+	ScheduledTweet struct {
+		ID        string
+		State     string
+		ExecuteAt time.Time
+		Text      string
+		Videos    []Video
+		Photos    []Photo
+		GIFs      []GIF
+	}
+
 	legacyTweet struct {
 		ConversationIDStr string `json:"conversation_id_str"`
 		CreatedAt         string `json:"created_at"`
