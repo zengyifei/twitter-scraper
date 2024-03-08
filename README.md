@@ -188,6 +188,8 @@ scraper.Logout()
 
 150 requests / 15 minutes
 
+`TweetDetail` endpoint requires auth, so `TweetResultByRestId` endpoint used instead when auth not provided. Which doesn't return `InReplyToStatus` and `Thread` tweets.
+
 ```golang
 tweet, err := scraper.GetTweet("1328684389388185600")
 ```
