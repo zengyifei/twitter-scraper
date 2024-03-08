@@ -5,6 +5,9 @@ import (
 )
 
 func TestFetchFollowing(t *testing.T) {
+	if skipAuthTest {
+		t.Skip("Skipping test due to environment variable")
+	}
 	users, _, err := testScraper.FetchFollowing("Support", 20, "")
 	if err != nil {
 		t.Error(err)
@@ -15,6 +18,9 @@ func TestFetchFollowing(t *testing.T) {
 }
 
 func TestFetchFollowers(t *testing.T) {
+	if skipAuthTest {
+		t.Skip("Skipping test due to environment variable")
+	}
 	users, _, err := testScraper.FetchFollowers("Support", 20, "")
 	if err != nil {
 		t.Error(err)

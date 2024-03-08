@@ -112,7 +112,7 @@ func TestGetProfilePrivate(t *testing.T) {
 }
 
 func TestGetProfileErrorSuspended(t *testing.T) {
-	_, err := testScraper.GetProfile("123")
+	_, err := testScraper.GetProfile("2")
 	if err == nil {
 		t.Error("Expected Error, got success")
 	} else {

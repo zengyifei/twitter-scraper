@@ -6,6 +6,9 @@ import (
 )
 
 func TestGetBookmarks(t *testing.T) {
+	if skipAuthTest {
+		t.Skip("Skipping test due to environment variable")
+	}
 	count := 0
 	maxTweetsNbr := 40
 	dupcheck := make(map[string]bool)

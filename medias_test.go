@@ -6,6 +6,9 @@ import (
 )
 
 func TestGetMedias(t *testing.T) {
+	if skipAuthTest {
+		t.Skip("Skipping test due to environment variable")
+	}
 	count := 0
 	maxTweetsNbr := 20
 	dupcheck := make(map[string]bool)
