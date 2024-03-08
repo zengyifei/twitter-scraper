@@ -136,7 +136,7 @@ func (s *Scraper) GetTweet(id string) (*Tweet, error) {
 				return tweet, nil
 			}
 		}
-	} else {
+	} else if s.isLogged {
 		req, err := s.newRequest("GET", "https://twitter.com/i/api/graphql/VWFGPVAGkZMGRKGe3GFFnA/TweetDetail")
 		if err != nil {
 			return nil, err
@@ -205,6 +205,71 @@ func (s *Scraper) GetTweet(id string) (*Tweet, error) {
 				return tweet, nil
 			}
 		}
+	} else {
+		req, err := s.newRequest("GET", "https://twitter.com/i/api/graphql/xBtHv5-Xsk268T5ng_OGNg/TweetResultByRestId")
+		if err != nil {
+			return nil, err
+		}
+		variables := map[string]interface{}{
+			"tweetId":                id,
+			"withCommunity":          false,
+			"includePromotedContent": false,
+			"withVoice":              false,
+		}
+
+		features := map[string]interface{}{
+			"creator_subscriptions_tweet_preview_api_enabled":                         true,
+			"c9s_tweet_anatomy_moderator_badge_enabled":                               true,
+			"tweetypie_unmention_optimization_enabled":                                true,
+			"responsive_web_edit_tweet_api_enabled":                                   true,
+			"graphql_is_translatable_rweb_tweet_is_translatable_enabled":              true,
+			"view_counts_everywhere_api_enabled":                                      true,
+			"longform_notetweets_consumption_enabled":                                 true,
+			"responsive_web_twitter_article_tweet_consumption_enabled":                true,
+			"tweet_awards_web_tipping_enabled":                                        false,
+			"freedom_of_speech_not_reach_fetch_enabled":                               true,
+			"standardized_nudges_misinfo":                                             true,
+			"tweet_with_visibility_results_prefer_gql_limited_actions_policy_enabled": true,
+			"rweb_video_timestamps_enabled":                                           true,
+			"longform_notetweets_rich_text_read_enabled":                              true,
+			"longform_notetweets_inline_media_enabled":                                true,
+			"responsive_web_graphql_exclude_directive_enabled":                        true,
+			"verified_phone_label_enabled":                                            false,
+			"responsive_web_graphql_skip_user_profile_image_extensions_enabled":       false,
+			"responsive_web_graphql_timeline_navigation_enabled":                      true,
+			"responsive_web_enhance_cards_enabled":                                    false,
+		}
+
+		fieldToggles := map[string]interface{}{"withArticleRichContentState": true}
+
+		query := url.Values{}
+		query.Set("variables", mapToJSONString(variables))
+		query.Set("features", mapToJSONString(features))
+		query.Set("fieldToggles", mapToJSONString(fieldToggles))
+		req.URL.RawQuery = query.Encode()
+
+		var result tweetResult
+
+		// Surprisingly, if bearerToken2 is not set, then animated GIFs are not
+		// present in the response for tweets with a GIF + a photo like this one:
+		// https://twitter.com/Twitter/status/1580661436132757506
+		curBearerToken := s.bearerToken
+		if curBearerToken != bearerToken2 {
+			s.setBearerToken(bearerToken2)
+		}
+
+		err = s.RequestAPI(req, &result)
+
+		if curBearerToken != bearerToken2 {
+			s.setBearerToken(curBearerToken)
+		}
+
+		if err != nil {
+			return nil, err
+		}
+
+		tweet := result.parse()
+		return tweet, nil
 	}
 	return nil, fmt.Errorf("tweet with ID %s not found", id)
 }

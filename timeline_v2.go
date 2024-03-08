@@ -264,3 +264,15 @@ func (conversation *threadedConversation) parse() []*Tweet {
 	}
 	return tweets
 }
+
+type tweetResult struct {
+	Data struct {
+		TweetResult struct {
+			Result result `json:"result"`
+		} `json:"tweetResult"`
+	} `json:"data"`
+}
+
+func (tweetResult *tweetResult) parse() *Tweet {
+	return tweetResult.Data.TweetResult.Result.parse()
+}
