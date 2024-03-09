@@ -125,8 +125,10 @@ f.Write(data)
 
 ### Using AuthToken
 
+`SetAuthToken` method simply set required cookies `auth_token` and `ct0`.
+
 ```golang
-scraper.SetAuthToken(authToken, ct0)
+scraper.SetAuthToken(twitterscraper.AuthToken{Token: "auth_token", CSRFToken: "ct0"})
 if !scraper.IsLoggedIn() {
     panic("Invalid AuthToken")
 }

@@ -405,12 +405,18 @@ func (s *Scraper) ClearCookies() {
 	s.client.Jar, _ = cookiejar.New(nil)
 }
 
+// Use auth_token cookie as Token and ct0 cookie as CSRFToken
+type AuthToken struct {
+	Token     string
+	CSRFToken string
+}
+
 // Auth using auth_token and ct0 cookies
-func (s *Scraper) SetAuthToken(authToken string, ct0 string) {
+func (s *Scraper) SetAuthToken(token AuthToken) {
 	expires := time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC)
 	cookies := []*http.Cookie{{
 		Name:       "auth_token",
-		Value:      authToken,
+		Value:      token.Token,
 		Path:       "",
 		Domain:     "twitter.com",
 		Expires:    expires,
@@ -423,7 +429,7 @@ func (s *Scraper) SetAuthToken(authToken string, ct0 string) {
 		Unparsed:   nil,
 	}, {
 		Name:       "ct0",
-		Value:      ct0,
+		Value:      token.CSRFToken,
 		Path:       "",
 		Domain:     "twitter.com",
 		Expires:    expires,

@@ -15,7 +15,7 @@ var (
 	proxy         = os.Getenv("PROXY")
 	proxyRequired = os.Getenv("PROXY_REQUIRED") != ""
 	authToken     = os.Getenv("AUTH_TOKEN")
-	ct0           = os.Getenv("CT0")
+	csrfToken     = os.Getenv("CSRF_TOKEN")
 	cookies       = os.Getenv("COOKIES")
 	username      = os.Getenv("TWITTER_USERNAME")
 	password      = os.Getenv("TWITTER_PASSWORD")
@@ -29,8 +29,8 @@ func init() {
 		return
 	}
 
-	if authToken != "" && ct0 != "" {
-		testScraper.SetAuthToken(authToken, ct0)
+	if authToken != "" && csrfToken != "" {
+		testScraper.SetAuthToken(twitterscraper.AuthToken{Token: authToken, CSRFToken: csrfToken})
 		if !testScraper.IsLoggedIn() {
 			panic("Invalid AuthToken")
 		}
@@ -102,13 +102,13 @@ func TestLoginPassword(t *testing.T) {
 }
 
 func TestLoginToken(t *testing.T) {
-	if skipAuthTest || authToken == "" || ct0 == "" {
+	if skipAuthTest || authToken == "" || csrfToken == "" {
 		t.Skip("Skipping test due to environment variable")
 	}
 
 	scraper := newTestScraper(true)
 
-	scraper.SetAuthToken(authToken, ct0)
+	scraper.SetAuthToken(twitterscraper.AuthToken{Token: authToken, CSRFToken: csrfToken})
 	if !scraper.IsLoggedIn() {
 		t.Error("Expected IsLoggedIn() = true")
 	}

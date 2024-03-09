@@ -6,7 +6,7 @@
 
     // Test auth token
     "AUTH_TOKEN": "",
-    "CT0": "",
+    "CSRF_TOKEN": "",
 
     // Test auth with cookies
     "COOKIES": "",
