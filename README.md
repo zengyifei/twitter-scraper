@@ -31,6 +31,10 @@ You can use this library to get tweets, profiles, and trends trivially.
   - [Get trends](#get-trends)
   - [Get following](#get-following)
   - [Get followers](#get-followers)
+  - [Get scheduled tweets](#get-scheduled-tweets)
+  - [Create scheduled tweet](#create-scheduled-tweet)
+  - [Delete scheduled tweet](#delete-scheduled-tweet)
+  - [Upload media](#upload-media)
 - [Connection](#connection)
   - [Proxy](#proxy)
   - [HTTP(s)](#https)
@@ -345,7 +349,7 @@ trends, err := scraper.GetTrends()
 
 ```golang
 var cursor string
-users, cursor, err := testScraper.FetchFollowing("Support", 20, cursor)
+users, cursor, err := scraper.FetchFollowing("Support", 20, cursor)
 ```
 
 ### Get followers
@@ -357,7 +361,57 @@ users, cursor, err := testScraper.FetchFollowing("Support", 20, cursor)
 
 ```golang
 var cursor string
-users, cursor, err := testScraper.FetchFollowers("Support", 20, cursor)
+users, cursor, err := scraper.FetchFollowers("Support", 20, cursor)
+```
+
+### Get scheduled tweets
+
+> [!IMPORTANT]  
+> Requires authentication!
+
+500 requests / 15 minutes
+
+```golang
+tweets, err := scraper.FetchScheduledTweets()
+```
+
+### Create scheduled tweet
+
+> [!IMPORTANT]  
+> Requires authentication!
+
+500 requests / 15 minutes
+
+```golang
+tweets, err := scraper.CreateScheduledTweet(twitterscraper.TweetSchedule{
+    Text:   "New scheduled tweet text",
+    Date:   time.Now().Add(time.Hour * 24 * 31),
+    Medias: nil,
+})
+```
+
+### Delete scheduled tweet
+
+> [!IMPORTANT]  
+> Requires authentication!
+
+500 requests / 15 minutes
+
+```golang
+err := scraper.DeleteScheduledTweet("123")
+```
+
+### Upload media
+
+> [!IMPORTANT]  
+> Requires authentication!
+
+50 requests / 15 minutes
+
+Uploads photo, video or gif for further posting or scheduling. Expires in 24 hours if not used.
+
+```golang
+media, err := scraper.UploadMedia("./files/movie.mp4")
 ```
 
 ## Connection

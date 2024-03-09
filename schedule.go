@@ -6,6 +6,7 @@ import (
 	"errors"
 	"io"
 	"net/url"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -109,6 +110,12 @@ type scheduleTweets struct {
 	} `json:"data"`
 }
 
+type TweetSchedule struct {
+	Text   string
+	Date   time.Time
+	Medias []*Media
+}
+
 func (timeline *scheduleTweets) parseTweets() []*ScheduledTweet {
 	var tweets []*ScheduledTweet
 
@@ -185,8 +192,8 @@ func (s *Scraper) DeleteScheduledTweet(id string) error {
 }
 
 // CreateScheduledTweet schedule new tweet.
-func (s *Scraper) CreateScheduledTweet(text string, date time.Time) (string, error) {
-	if date.Unix() <= time.Now().Unix() {
+func (s *Scraper) CreateScheduledTweet(schedule TweetSchedule) (string, error) {
+	if schedule.Date.Unix() <= time.Now().Unix() {
 		return "", errors.New("date can't be in past")
 	}
 
@@ -199,14 +206,24 @@ func (s *Scraper) CreateScheduledTweet(text string, date time.Time) (string, err
 
 	post_tweet_request := map[string]interface{}{
 		"auto_populate_reply_metadata": false,
-		"status":                       text,
+		"status":                       schedule.Text,
 		"exclude_reply_user_ids":       []string{},
 		"media_ids":                    []string{},
 	}
 
+	if len(schedule.Medias) > 0 {
+		var media_ids []string
+
+		for _, media := range schedule.Medias {
+			media_ids = append(media_ids, strconv.Itoa(media.ID))
+		}
+
+		post_tweet_request["media_ids"] = media_ids
+	}
+
 	variables := map[string]interface{}{
 		"post_tweet_request": post_tweet_request,
-		"execute_at":         date.Unix(),
+		"execute_at":         schedule.Date.Unix(),
 	}
 
 	body := map[string]interface{}{

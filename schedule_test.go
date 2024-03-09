@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"testing"
 	"time"
+
+	twitterscraper "github.com/imperatrona/twitter-scraper"
 )
 
 func TestFetchScheduledTweets(t *testing.T) {
@@ -27,7 +29,12 @@ func TestCreateScheduledTweets(t *testing.T) {
 		t.Skip("Skipping test due to environment variable")
 	}
 	var err error
-	id, err = testScraper.CreateScheduledTweet("new tweet", time.Now().Add(time.Hour*24*31))
+
+	id, err = testScraper.CreateScheduledTweet(twitterscraper.TweetSchedule{
+		Text:   "new tweet",
+		Date:   time.Now().Add(time.Hour * 24 * 31),
+		Medias: nil,
+	})
 	if err != nil {
 		t.Error(err)
 	}
