@@ -57,7 +57,8 @@ func (s *Scraper) RequestAPI(req *http.Request, target interface{}) error {
 		return err
 	}
 
-	if resp.StatusCode != http.StatusOK {
+	statusOK := resp.StatusCode >= 200 && resp.StatusCode < 300
+	if !statusOK {
 		return fmt.Errorf("response status %s: %s", resp.Status, content)
 	}
 
