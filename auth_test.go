@@ -56,7 +56,7 @@ func init() {
 	}
 
 	skipAuthTest = true
-	fmt.Println("None of any auth data provided, skipping all tests that reqires auth")
+	fmt.Println("None of any auth data provided, skipping all tests that requires auth")
 }
 
 func newTestScraper(skip_auth bool) *twitterscraper.Scraper {
