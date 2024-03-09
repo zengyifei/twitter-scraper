@@ -55,7 +55,8 @@ func init() {
 		return
 	}
 
-	panic("None of any auth data provided, provide any variables or set SKIP_AUTH_TEST.")
+	skipAuthTest = true
+	fmt.Println("None of any auth data provided, skipping all tests that reqires auth")
 }
 
 func newTestScraper(skip_auth bool) *twitterscraper.Scraper {
