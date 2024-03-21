@@ -64,11 +64,8 @@ import (
 )
 
 func main() {
-    authToken := "auth_token"
-    ct0 := "ct0"
-
     scraper := twitterscraper.New()
-    scraper.SetAuthToken(authToken, ct0)
+    scraper.SetAuthToken(twitterscraper.AuthToken{Token: "auth_token", CSRFToken: "ct0"})
 
     // After setting Cookies or AuthToken you have to execute IsLoggedIn method.
     // Without it, scraper wouldn't be able to make requests that requires authentication
