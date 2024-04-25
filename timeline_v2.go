@@ -4,9 +4,8 @@ import (
 	"strconv"
 )
 
-type result struct {
-	Typename string `json:"__typename"`
-	Core     struct {
+type tweet struct {
+	Core struct {
 		UserResults struct {
 			Result struct {
 				IsBlueVerified bool       `json:"is_blue_verified"`
@@ -30,11 +29,26 @@ type result struct {
 	Legacy legacyTweet `json:"legacy"`
 }
 
+type result struct {
+	Typename string `json:"__typename"`
+	tweet
+	Tweet tweet `json:"tweet"`
+}
+
 func (result *result) parse() *Tweet {
 	if result.NoteTweet.NoteTweetResults.Result.Text != "" {
 		result.Legacy.FullText = result.NoteTweet.NoteTweetResults.Result.Text
 	}
-	tw := parseLegacyTweet(&result.Core.UserResults.Result.Legacy, &result.Legacy)
+	var tweet *legacyTweet
+	var user *legacyUser
+	if result.Typename == "TweetWithVisibilityResults" {
+		tweet = &result.Tweet.Legacy
+		user = &result.Tweet.Core.UserResults.Result.Legacy
+	} else {
+		tweet = &result.Legacy
+		user = &result.Core.UserResults.Result.Legacy
+	}
+	tw := parseLegacyTweet(user, tweet)
 	if tw == nil {
 		return nil
 	}
@@ -222,7 +236,7 @@ func (conversation *threadedConversation) parse() []*Tweet {
 	var tweets []*Tweet
 	for _, instruction := range conversation.Data.ThreadedConversationWithInjectionsV2.Instructions {
 		for _, entry := range instruction.Entries {
-			if entry.Content.ItemContent.TweetResults.Result.Typename == "Tweet" {
+			if entry.Content.ItemContent.TweetResults.Result.Typename == "Tweet" || entry.Content.ItemContent.TweetResults.Result.Typename == "TweetWithVisibilityResults" {
 				if tweet := entry.Content.ItemContent.TweetResults.Result.parse(); tweet != nil {
 					if entry.Content.ItemContent.TweetDisplayType == "SelfThread" {
 						tweet.IsSelfThread = true
@@ -231,7 +245,7 @@ func (conversation *threadedConversation) parse() []*Tweet {
 				}
 			}
 			for _, item := range entry.Content.Items {
-				if item.Item.ItemContent.TweetResults.Result.Typename == "Tweet" {
+				if item.Item.ItemContent.TweetResults.Result.Typename == "Tweet" || item.Item.ItemContent.TweetResults.Result.Typename == "TweetWithVisibilityResults" {
 					if tweet := item.Item.ItemContent.TweetResults.Result.parse(); tweet != nil {
 						if item.Item.ItemContent.TweetDisplayType == "SelfThread" {
 							tweet.IsSelfThread = true
