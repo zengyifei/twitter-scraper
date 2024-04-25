@@ -21,6 +21,7 @@ type (
 		ID      string
 		Preview string
 		URL     string
+		HLSURL  string
 	}
 
 	// GIF type.
@@ -127,6 +128,7 @@ type (
 				URL       string `json:"url"`
 				VideoInfo struct {
 					Variants []struct {
+						Type    string `json:"content_type"`
 						Bitrate int    `json:"bitrate"`
 						URL     string `json:"url"`
 					} `json:"variants"`

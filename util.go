@@ -248,6 +248,9 @@ func parseLegacyTweet(user *legacyUser, tweet *legacyTweet) *Tweet {
 
 			maxBitrate := 0
 			for _, variant := range media.VideoInfo.Variants {
+				if variant.Type == "application/x-mpegURL" {
+					video.HLSURL = variant.URL
+				}
 				if variant.Bitrate > maxBitrate {
 					video.URL = strings.TrimSuffix(variant.URL, "?tag=10")
 					maxBitrate = variant.Bitrate
