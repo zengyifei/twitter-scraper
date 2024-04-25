@@ -39,16 +39,13 @@ func (result *result) parse() *Tweet {
 	if result.NoteTweet.NoteTweetResults.Result.Text != "" {
 		result.Legacy.FullText = result.NoteTweet.NoteTweetResults.Result.Text
 	}
-	var tweet *legacyTweet
-	var user *legacyUser
+	var legacy *legacyTweet = &result.Legacy
+	var user *legacyUser = &result.Core.UserResults.Result.Legacy
 	if result.Typename == "TweetWithVisibilityResults" {
-		tweet = &result.Tweet.Legacy
+		legacy = &result.Tweet.Legacy
 		user = &result.Tweet.Core.UserResults.Result.Legacy
-	} else {
-		tweet = &result.Legacy
-		user = &result.Core.UserResults.Result.Legacy
 	}
-	tw := parseLegacyTweet(user, tweet)
+	tw := parseLegacyTweet(user, legacy)
 	if tw == nil {
 		return nil
 	}
@@ -144,7 +141,7 @@ func (timeline *timelineV2) parseTweets() ([]*Tweet, string) {
 				cursor = entry.Content.Value
 				continue
 			}
-			if entry.Content.ItemContent.TweetResults.Result.Typename == "Tweet" {
+			if entry.Content.ItemContent.TweetResults.Result.Typename == "Tweet" || entry.Content.ItemContent.TweetResults.Result.Typename == "TweetWithVisibilityResults" {
 				if tweet := entry.Content.ItemContent.TweetResults.Result.parse(); tweet != nil {
 					tweets = append(tweets, tweet)
 				}
@@ -159,7 +156,7 @@ func (timeline *timelineV2) parseTweets() ([]*Tweet, string) {
 		}
 		if len(instruction.ModuleItems) > 0 {
 			for _, entry := range instruction.ModuleItems {
-				if entry.Item.ItemContent.TweetResults.Result.Typename == "Tweet" {
+				if entry.Item.ItemContent.TweetResults.Result.Typename == "Tweet" || entry.Item.ItemContent.TweetResults.Result.Typename == "TweetWithVisibilityResults" {
 					if tweet := entry.Item.ItemContent.TweetResults.Result.parse(); tweet != nil {
 						tweets = append(tweets, tweet)
 					}
