@@ -36,9 +36,19 @@ func (timeline *searchTimeline) parseTweets() ([]*Tweet, string) {
 			}
 			for _, entry := range instruction.Entries {
 				if entry.Content.ItemContent.TweetDisplayType == "Tweet" {
-					if tweet := parseLegacyTweet(&entry.Content.ItemContent.TweetResults.Result.Core.UserResults.Result.Legacy, &entry.Content.ItemContent.TweetResults.Result.Legacy); tweet != nil {
-						if tweet.Views == 0 && entry.Content.ItemContent.TweetResults.Result.Views.Count != "" {
-							tweet.Views, _ = strconv.Atoi(entry.Content.ItemContent.TweetResults.Result.Views.Count)
+					var legacy *legacyTweet = &entry.Content.ItemContent.TweetResults.Result.Legacy
+					var user *legacyUser = &entry.Content.ItemContent.TweetResults.Result.Core.UserResults.Result.Legacy
+					if entry.Content.ItemContent.TweetResults.Result.Typename == "TweetWithVisibilityResults" {
+						legacy = &entry.Content.ItemContent.TweetResults.Result.Tweet.Legacy
+						user = &entry.Content.ItemContent.TweetResults.Result.Tweet.Core.UserResults.Result.Legacy
+					}
+					if tweet := parseLegacyTweet(user, legacy); tweet != nil {
+						var views = entry.Content.ItemContent.TweetResults.Result.Views.Count
+						if entry.Content.ItemContent.TweetResults.Result.Typename == "TweetWithVisibilityResults" {
+							views = entry.Content.ItemContent.TweetResults.Result.Tweet.Views.Count
+						}
+						if tweet.Views == 0 && views != "" {
+							tweet.Views, _ = strconv.Atoi(views)
 						}
 						tweets = append(tweets, tweet)
 					}
