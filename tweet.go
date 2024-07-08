@@ -52,17 +52,20 @@ func (s *Scraper) CreateTweet(tweet NewTweet) (*Tweet, error) {
 
 	req.Header.Set("content-type", "application/json")
 
-	post_medias := map[string]interface{}{
-		"media_entities":     []string{},
-		"possibly_sensitive": false,
-	}
+	media_entities := []map[string]interface{}{}
 
 	if len(tweet.Medias) > 0 {
-		var media_ids []string
 		for _, media := range tweet.Medias {
-			media_ids = append(media_ids, strconv.Itoa(media.ID))
+			media_entities = append(media_entities, map[string]interface{}{
+				"media_id":     strconv.Itoa(media.ID),
+				"tagged_users": []string{},
+			})
 		}
-		post_medias["media_entities"] = media_ids
+	}
+
+	post_medias := map[string]interface{}{
+		"media_entities":     media_entities,
+		"possibly_sensitive": false,
 	}
 
 	variables := map[string]interface{}{

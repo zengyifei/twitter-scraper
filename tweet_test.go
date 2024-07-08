@@ -28,6 +28,42 @@ func TestCreateTweet(t *testing.T) {
 	}
 }
 
+func TestCreateTweetWithMedia(t *testing.T) {
+	if skipAuthTest {
+		t.Skip("Skipping test due to environment variable")
+	}
+
+	var err error
+
+	var video *twitterscraper.Media
+	video, err = testScraper.UploadMedia("./photo.jpg")
+	if err != nil {
+		t.Error(err)
+	}
+
+	var photo *twitterscraper.Media
+	photo, err = testScraper.UploadMedia("./video.mp4")
+	if err != nil {
+		t.Error(err)
+	}
+
+	var tweet *twitterscraper.Tweet
+	tweet, err = testScraper.CreateTweet(twitterscraper.NewTweet{
+		Text: "3 more seconds till i get 🖤",
+		Medias: []*twitterscraper.Media{
+			photo,
+			video,
+		},
+	})
+
+	if tweet != nil {
+		testDeleteTweetId = tweet.ID
+	}
+	if err != nil {
+		t.Error(err)
+	}
+}
+
 func TestDeleteTweet(t *testing.T) {
 	if skipAuthTest {
 		t.Skip("Skipping test due to environment variable")
