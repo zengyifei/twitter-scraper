@@ -13,10 +13,41 @@ type NewTweet struct {
 	Medias []*Media
 }
 
-func (s *Scraper) CreateTweet(tweet NewTweet) (string, error) {
+type newTweet struct {
+	Data struct {
+		CreateTweet struct {
+			TweetResults struct {
+				Result tweet `json:"result"`
+			} `json:"tweet_results"`
+		} `json:"create_tweet"`
+	} `json:"data"`
+}
+
+func (newTweet *newTweet) parse() *Tweet {
+	var tweet = &newTweet.Data.CreateTweet.TweetResults.Result
+
+	if tweet.NoteTweet.NoteTweetResults.Result.Text != "" {
+		tweet.Legacy.FullText = tweet.NoteTweet.NoteTweetResults.Result.Text
+	}
+	var legacy *legacyTweet = &tweet.Legacy
+	var user *legacyUser = &tweet.Core.UserResults.Result.Legacy
+	tw := parseLegacyTweet(user, legacy)
+	if tw == nil {
+		return nil
+	}
+	if tw.Views == 0 && tweet.Views.Count != "" {
+		tw.Views, _ = strconv.Atoi(tweet.Views.Count)
+	}
+	if tweet.QuotedStatusResult.Result != nil {
+		tw.QuotedStatus = tweet.QuotedStatusResult.Result.parse()
+	}
+	return tw
+}
+
+func (s *Scraper) CreateTweet(tweet NewTweet) (*Tweet, error) {
 	req, err := s.newRequest("POST", "https://twitter.com/i/api/graphql/oB-5XsHNAbjvARJEc8CZFw/CreateTweet")
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	req.Header.Set("content-type", "application/json")
@@ -76,28 +107,17 @@ func (s *Scraper) CreateTweet(tweet NewTweet) (string, error) {
 	b, _ := json.Marshal(body)
 	req.Body = io.NopCloser(bytes.NewReader(b))
 
-	var response struct {
-		Data struct {
-			CreateTweet struct {
-				TweetResults struct {
-					Result struct {
-						RestID string `json:"rest_id"`
-					} `json:"result"`
-				} `json:"tweet_results"`
-			} `json:"create_tweet"`
-		} `json:"data"`
-	}
-
+	var response newTweet
 	err = s.RequestAPI(req, &response)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	if response.Data.CreateTweet.TweetResults.Result.RestID != "" {
-		return response.Data.CreateTweet.TweetResults.Result.RestID, nil
+	if result := response.parse(); result != nil {
+		return result, nil
 	}
 
-	return "", errors.New("tweet wasn't post")
+	return nil, errors.New("tweet wasn't post")
 }
 
 func (s *Scraper) DeleteTweet(tweetId string) error {

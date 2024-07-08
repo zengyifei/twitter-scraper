@@ -14,10 +14,15 @@ func TestCreateTweet(t *testing.T) {
 	}
 
 	var err error
-	testDeleteTweetId, err = testScraper.CreateTweet(twitterscraper.NewTweet{
-		Text:   "2",
+	var tweet *twitterscraper.Tweet
+	tweet, err = testScraper.CreateTweet(twitterscraper.NewTweet{
+		Text:   "i love hollywood 🖤",
 		Medias: nil,
 	})
+
+	if tweet != nil {
+		testDeleteTweetId = tweet.ID
+	}
 	if err != nil {
 		t.Error(err)
 	}
