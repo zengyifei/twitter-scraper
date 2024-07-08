@@ -1,0 +1,228 @@
+package twitterscraper
+
+import (
+	"bytes"
+	"encoding/json"
+	"errors"
+	"io"
+	"strconv"
+)
+
+type NewTweet struct {
+	Text   string
+	Medias []*Media
+}
+
+func (s *Scraper) CreateTweet(tweet NewTweet) (string, error) {
+	req, err := s.newRequest("POST", "https://twitter.com/i/api/graphql/oB-5XsHNAbjvARJEc8CZFw/CreateTweet")
+	if err != nil {
+		return "", err
+	}
+
+	req.Header.Set("content-type", "application/json")
+
+	post_medias := map[string]interface{}{
+		"media_entities":     []string{},
+		"possibly_sensitive": false,
+	}
+
+	if len(tweet.Medias) > 0 {
+		var media_ids []string
+		for _, media := range tweet.Medias {
+			media_ids = append(media_ids, strconv.Itoa(media.ID))
+		}
+		post_medias["media_entities"] = media_ids
+	}
+
+	variables := map[string]interface{}{
+		"dark_request":            false,
+		"media":                   post_medias,
+		"semantic_annotation_ids": []string{},
+		"tweet_text":              tweet.Text,
+	}
+
+	features := map[string]interface{}{
+		"communities_web_enable_tweet_community_results_fetch":                    true,
+		"c9s_tweet_anatomy_moderator_badge_enabled":                               true,
+		"tweetypie_unmention_optimization_enabled":                                true,
+		"responsive_web_edit_tweet_api_enabled":                                   true,
+		"graphql_is_translatable_rweb_tweet_is_translatable_enabled":              true,
+		"view_counts_everywhere_api_enabled":                                      true,
+		"longform_notetweets_consumption_enabled":                                 true,
+		"responsive_web_twitter_article_tweet_consumption_enabled":                true,
+		"tweet_awards_web_tipping_enabled":                                        false,
+		"creator_subscriptions_quote_tweet_preview_enabled":                       false,
+		"longform_notetweets_rich_text_read_enabled":                              true,
+		"longform_notetweets_inline_media_enabled":                                true,
+		"articles_preview_enabled":                                                true,
+		"rweb_video_timestamps_enabled":                                           true,
+		"rweb_tipjar_consumption_enabled":                                         true,
+		"responsive_web_graphql_exclude_directive_enabled":                        true,
+		"verified_phone_label_enabled":                                            false,
+		"freedom_of_speech_not_reach_fetch_enabled":                               true,
+		"standardized_nudges_misinfo":                                             true,
+		"tweet_with_visibility_results_prefer_gql_limited_actions_policy_enabled": true,
+		"responsive_web_graphql_skip_user_profile_image_extensions_enabled":       false,
+		"responsive_web_graphql_timeline_navigation_enabled":                      true,
+		"responsive_web_enhance_cards_enabled":                                    false,
+	}
+
+	body := map[string]interface{}{
+		"features":  features,
+		"variables": variables,
+		"queryId":   "oB-5XsHNAbjvARJEc8CZFw",
+	}
+
+	b, _ := json.Marshal(body)
+	req.Body = io.NopCloser(bytes.NewReader(b))
+
+	var response struct {
+		Data struct {
+			CreateTweet struct {
+				TweetResults struct {
+					Result struct {
+						RestID string `json:"rest_id"`
+					} `json:"result"`
+				} `json:"tweet_results"`
+			} `json:"create_tweet"`
+		} `json:"data"`
+	}
+
+	err = s.RequestAPI(req, &response)
+	if err != nil {
+		return "", err
+	}
+
+	if response.Data.CreateTweet.TweetResults.Result.RestID != "" {
+		return response.Data.CreateTweet.TweetResults.Result.RestID, nil
+	}
+
+	return "", errors.New("tweet wasn't post")
+}
+
+func (s *Scraper) DeleteTweet(tweetId string) error {
+	req, err := s.newRequest("POST", "https://twitter.com/i/api/graphql/VaenaVgh5q5ih7kvyVjgtg/DeleteTweet")
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("content-type", "application/json")
+	variables := map[string]interface{}{
+		"dark_request": false,
+		"tweet_id":     tweetId,
+	}
+
+	body := map[string]interface{}{
+		"variables": variables,
+		"queryId":   "VaenaVgh5q5ih7kvyVjgtg",
+	}
+
+	b, _ := json.Marshal(body)
+	req.Body = io.NopCloser(bytes.NewReader(b))
+
+	var response struct {
+		Data struct {
+			CreateTweet struct {
+				TweetResults struct {
+				} `json:"tweet_results"`
+			} `json:"delete_tweet"`
+		} `json:"data"`
+	}
+
+	err = s.RequestAPI(req, &response)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *Scraper) CreateRetweet(tweetId string) (string, error) {
+	req, err := s.newRequest("POST", "https://twitter.com/i/api/graphql/ojPdsZsimiJrUGLR1sjUtA/CreateRetweet")
+	if err != nil {
+		return "", err
+	}
+
+	req.Header.Set("content-type", "application/json")
+	variables := map[string]interface{}{
+		"dark_request": false,
+		"tweet_id":     tweetId,
+	}
+
+	body := map[string]interface{}{
+		"variables": variables,
+		"queryId":   "ojPdsZsimiJrUGLR1sjUtA",
+	}
+
+	b, _ := json.Marshal(body)
+	req.Body = io.NopCloser(bytes.NewReader(b))
+
+	var response struct {
+		Data struct {
+			CreateRetweet struct {
+				RetweetResults struct {
+					Result struct {
+						RestID string `json:"rest_id"`
+						Legacy struct {
+							FullText string `json:"full_text"`
+						} `json:"legacy"`
+					} `json:"result"`
+				} `json:"retweet_results"`
+			} `json:"create_retweet"`
+		} `json:"data"`
+	}
+
+	err = s.RequestAPI(req, &response)
+	if err != nil {
+		return "", err
+	}
+
+	if response.Data.CreateRetweet.RetweetResults.Result.RestID != "" {
+		return response.Data.CreateRetweet.RetweetResults.Result.RestID, nil
+	}
+
+	return "", errors.New("tweet wasn't retweeted")
+}
+
+// Retweeted tweets has their own id, but to delete retweet twitter using id of source tweet
+func (s *Scraper) DeleteRetweet(tweetId string) error {
+	req, err := s.newRequest("POST", "https://twitter.com/i/api/graphql/iQtK4dl5hBmXewYZuEOKVw/DeleteRetweet")
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("content-type", "application/json")
+	variables := map[string]interface{}{
+		"dark_request":    false,
+		"source_tweet_id": tweetId,
+	}
+	body := map[string]interface{}{
+		"variables": variables,
+		"queryId":   "iQtK4dl5hBmXewYZuEOKVw",
+	}
+
+	b, _ := json.Marshal(body)
+	req.Body = io.NopCloser(bytes.NewReader(b))
+
+	var response struct {
+		Data struct {
+			Unretweet struct {
+				SourceTweetResults struct {
+					Result struct {
+						RestID string `json:"rest_id"`
+						Legacy struct {
+							FullText string `json:"full_text"`
+						} `json:"legacy"`
+					} `json:"result"`
+				} `json:"source_tweet_results"`
+			} `json:"unretweet"`
+		} `json:"data"`
+	}
+
+	err = s.RequestAPI(req, &response)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
