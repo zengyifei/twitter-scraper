@@ -310,7 +310,7 @@ func TestFetchHomeTweets(t *testing.T) {
 	if skipAuthTest {
 		t.Skip("Skipping test due to environment variable")
 	}
-	tweets, _, err := testScraper.FetchHomeTweets("", 20, "")
+	tweets, _, err := testScraper.FetchHomeTweets(20, "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -383,7 +383,7 @@ func TestFetchForYouTweets(t *testing.T) {
 	if skipAuthTest {
 		t.Skip("Skipping test due to environment variable")
 	}
-	tweets, _, err := testScraper.FetchForYouTweets("", 20, "")
+	tweets, _, err := testScraper.FetchForYouTweets(20, "")
 	if err != nil {
 		t.Fatal(err)
 	}
