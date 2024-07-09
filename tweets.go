@@ -285,6 +285,8 @@ type homeEntry struct {
 				Result result `json:"result"`
 			} `json:"tweet_results"`
 		} `json:"itemContent"`
+		Cursor     string `json:"value"`
+		CursorType string `json:"cursorType"`
 	} `json:"content"`
 }
 
@@ -312,7 +314,9 @@ func (timeline *homeTimeline) parseTweets() ([]*Tweet, string) {
 	var tweets []*Tweet
 	for _, instruction := range timeline.Data.Home.HomeTimeline.Instructions {
 		for _, entry := range instruction.Entries {
-			if entry.Content.ItemContent.TweetResults.Result.Typename == "Tweet" {
+			if entry.Content.CursorType == "Bottom" {
+				cursor = entry.Content.Cursor
+			} else if entry.Content.ItemContent.TweetResults.Result.Typename == "Tweet" {
 				if tweet := entry.Content.ItemContent.TweetResults.Result.parse(); tweet != nil {
 					tweets = append(tweets, tweet)
 				}
@@ -344,6 +348,11 @@ func (s *Scraper) FetchHomeTweets(_ string, maxTweetsNbr int, cursor string) ([]
 		"withQuickPromoteEligibilityTweetFields": true,
 		"requestContext":                         "launch",
 	}
+
+	if cursor != "" {
+		variables["cursor"] = cursor
+	}
+
 	features := map[string]interface{}{
 		"rweb_tipjar_consumption_enabled":                                         true,
 		"responsive_web_graphql_exclude_directive_enabled":                        true,
