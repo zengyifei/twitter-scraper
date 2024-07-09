@@ -33,7 +33,7 @@ You can use this library to get tweets, profiles, and trends trivially.
   - [Get followers](#get-followers)
   - [Create tweet](#create-tweet)
   - [Delete tweet](#delete-tweet)
-  - [Create Retweet](#create-retweet)
+  - [Create retweet](#create-retweet)
   - [Delete retweet](#delete-retweet)
   - [Get scheduled tweets](#get-scheduled-tweets)
   - [Create scheduled tweet](#create-scheduled-tweet)
@@ -404,7 +404,7 @@ tweet, err = scraper.CreateTweet(twitterscraper.NewTweet{
 err := testScraper.DeleteTweet("1810458885008105870");
 ```
 
-### Create Retweet
+### Create retweet
 
 > [!IMPORTANT]  
 > Requires authentication!
