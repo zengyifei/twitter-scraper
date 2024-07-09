@@ -24,6 +24,8 @@ You can use this library to get tweets, profiles, and trends trivially.
   - [Get user tweets](#get-user-tweets)
   - [Get user medias](#get-user-medias)
   - [Get bookmarks](#get-bookmarks)
+  - [Get home tweets](#get-home-tweets)
+  - [Get foryou tweets](#get-foryou-tweets)
   - [Search tweets](#search-tweets)
   - [Search params](#search-params)
   - [Get profile](#get-profile)
@@ -268,6 +270,56 @@ for tweet := range scraper.GetBookmarks(context.Background(), 50) {
 ```golang
 var cursor string
 tweets, cursor, err := scraper.FetchBookmarks(20, cursor)
+```
+
+### Get home tweets
+
+> [!IMPORTANT]  
+> Requires authentication!
+
+500 requests / 15 minutes
+
+`GetHomeTweets` returns a channel with the specified number of latest home tweets. It’s using the `FetchHomeTweets` method under the hood.
+
+```golang
+for tweet := range scraper.GetHomeTweets(context.Background(), 50) {
+    if tweet.Error != nil {
+        panic(tweet.Error)
+    }
+    fmt.Println(tweet.Text)
+}
+```
+
+`FetchHomeTweets` returns latest home tweets and cursor for fetching the next page. Each request returns up to 20 tweets.
+
+```golang
+var cursor string
+tweets, cursor, err := scraper.FetchHomeTweets(20, cursor)
+```
+
+### Get foryou tweets
+
+> [!IMPORTANT]  
+> Requires authentication!
+
+500 requests / 15 minutes
+
+`GetForYouTweets` returns a channel with the specified number of for you home tweets. It’s using the `FetchForYouTweets` method under the hood.
+
+```golang
+for tweet := range scraper.GetForYouTweets(context.Background(), 50) {
+    if tweet.Error != nil {
+        panic(tweet.Error)
+    }
+    fmt.Println(tweet.Text)
+}
+```
+
+`FetchForYouTweets` returns for you home tweets and cursor for fetching the next page. Each request returns up to 20 tweets.
+
+```golang
+var cursor string
+tweets, cursor, err := scraper.FetchForYouTweets(20, cursor)
 ```
 
 ### Search tweets
