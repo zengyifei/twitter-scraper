@@ -328,11 +328,15 @@ func (timeline *homeTimeline) parseTweets() ([]*Tweet, string) {
 
 // GetHomeTweets returns channel with tweets from home timeline
 func (s *Scraper) GetHomeTweets(ctx context.Context, maxTweetsNbr int) <-chan *TweetResult {
-	return getTweetTimeline(ctx, "", maxTweetsNbr, s.FetchHomeTweets)
+	return getTweetTimeline(ctx, "", maxTweetsNbr, s.fetchHomeTweets)
+}
+
+func (s *Scraper) FetchHomeTweets(maxTweetsNbr int, cursor string) ([]*Tweet, string, error) {
+	return s.fetchHomeTweets("", maxTweetsNbr, cursor)
 }
 
 // FetchHomeTweets gets tweets from home timline, via the Twitter frontend API.
-func (s *Scraper) FetchHomeTweets(_ string, maxTweetsNbr int, cursor string) ([]*Tweet, string, error) {
+func (s *Scraper) fetchHomeTweets(_ string, maxTweetsNbr int, cursor string) ([]*Tweet, string, error) {
 	if maxTweetsNbr > 200 {
 		maxTweetsNbr = 200
 	}
@@ -399,11 +403,15 @@ func (s *Scraper) FetchHomeTweets(_ string, maxTweetsNbr int, cursor string) ([]
 
 // GetForYouTweets returns channel with tweets from for you timeline
 func (s *Scraper) GetForYouTweets(ctx context.Context, maxTweetsNbr int) <-chan *TweetResult {
-	return getTweetTimeline(ctx, "", maxTweetsNbr, s.FetchHomeTweets)
+	return getTweetTimeline(ctx, "", maxTweetsNbr, s.fetchForYouTweets)
+}
+
+func (s *Scraper) FetchForYouTweets(maxTweetsNbr int, cursor string) ([]*Tweet, string, error) {
+	return s.fetchForYouTweets("", maxTweetsNbr, cursor)
 }
 
 // FetchForYouTweets gets tweets from for you timline, via the Twitter frontend API.
-func (s *Scraper) FetchForYouTweets(_ string, maxTweetsNbr int, cursor string) ([]*Tweet, string, error) {
+func (s *Scraper) fetchForYouTweets(_ string, maxTweetsNbr int, cursor string) ([]*Tweet, string, error) {
 	if maxTweetsNbr > 200 {
 		maxTweetsNbr = 200
 	}
