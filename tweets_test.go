@@ -101,6 +101,7 @@ func TestGetTweetWithVideo(t *testing.T) {
 				ID:      "1697304568550330368",
 				Preview: "https://pbs.twimg.com/amplify_video_thumb/1697304568550330368/img/BUlESpef6FmWV_j2.jpg",
 				URL:     "https://video.twimg.com/amplify_video/1697304568550330368/vid/720x720/KyQlZA9zaf0kqY9Z.mp4?tag=14",
+				HLSURL:  "https://video.twimg.com/amplify_video/1697304568550330368/pl/lhOwA_kBgWCnJX1l.m3u8?tag=14",
 			},
 		},
 	}
