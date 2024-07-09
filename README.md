@@ -31,6 +31,10 @@ You can use this library to get tweets, profiles, and trends trivially.
   - [Get trends](#get-trends)
   - [Get following](#get-following)
   - [Get followers](#get-followers)
+  - [Create tweet](#create-tweet)
+  - [Delete tweet](#delete-tweet)
+  - [Create Retweet](#create-retweet)
+  - [Delete retweet](#delete-retweet)
   - [Get scheduled tweets](#get-scheduled-tweets)
   - [Create scheduled tweet](#create-scheduled-tweet)
   - [Delete scheduled tweet](#delete-scheduled-tweet)
@@ -361,6 +365,65 @@ users, cursor, err := scraper.FetchFollowing("Support", 20, cursor)
 ```golang
 var cursor string
 users, cursor, err := scraper.FetchFollowers("Support", 20, cursor)
+```
+
+### Create tweet
+
+> [!IMPORTANT]  
+> Requires authentication!
+
+```golang
+tweet, err = scraper.CreateTweet(twitterscraper.NewTweet{
+    Text:   "new tweet text",
+    Medias: nil,
+})
+```
+
+To create tweet with medias, you need to upload media first. Up to 4 medias; jpg, mp4 and gif allowed.
+
+```golang
+var media *twitterscraper.Media
+media, err = testScraper.UploadMedia("./photo.jpg")
+if err != nil {
+    t.Error(err)
+}
+tweet, err = scraper.CreateTweet(twitterscraper.NewTweet{
+    Text:   "new tweet text",
+    Medias: []*twitterscraper.Media{
+        media,
+    },
+})
+```
+
+### Delete tweet
+
+> [!IMPORTANT]  
+> Requires authentication!
+
+```golang
+err := testScraper.DeleteTweet("1810458885008105870");
+```
+
+### Create Retweet
+
+> [!IMPORTANT]  
+> Requires authentication!
+
+Returns retweet id, which is not the same as source tweet id.
+
+```golang
+retweetId, err := testScraper.CreateRetweet("1792634158977568997");
+```
+
+### Delete retweet
+
+> [!IMPORTANT]  
+> Requires authentication!
+
+To delete retweet use source tweet id instead retweet id.
+
+```golang
+err := testScraper.DeleteRetweet("1792634158977568997");
 ```
 
 ### Get scheduled tweets
