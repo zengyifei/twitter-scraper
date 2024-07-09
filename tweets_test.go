@@ -305,3 +305,17 @@ func TestTweetThread(t *testing.T) {
 		}
 	}
 }
+
+func TestHomeTweets(t *testing.T) {
+	if skipAuthTest {
+		t.Skip("Skipping test due to environment variable")
+	}
+	tweets, _, err := testScraper.FetchHomeTweets("", 20, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if len(tweets) < 1 {
+		t.Fatal("returned 0 tweets")
+	}
+}
