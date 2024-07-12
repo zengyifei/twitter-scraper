@@ -12,6 +12,7 @@ You can use this library to get tweets, profiles, and trends trivially.
 - [Installation](#installation)
 - [Quick start](#quick-start)
 - [Rate limits](#rate-limits)
+- [Methods that returns channels](#methods-that-returns-channels)
 - [Authentication](#authentication)
   - [Using cookies](#using-cookies)
   - [Using AuthToken](#using-authtoken)
@@ -95,6 +96,11 @@ Api has a global limit on how many requests per second are allowed, don’t make
 Apparently twitter doesn’t limit the number of accounts that can be used per one IP address. This could change at any time. As of February 2024, I have been managing 20 accounts per IP address without receiving a ban for several months.
 
 OpenAccount was great in the past, but now it’s nerfed by twitter. They allow 180 requests instead of 150, but you can only create one account per month with one IP address. If you use OpenAccount you should save your credentials and use them later with `WithOpenAccount` method.
+
+## Methods that returns channels
+
+Some methods returns channels. They created to rid you from dealing with `cursor`, but under the hood they still using the same endpoints as they `Fetch` counterparts, they have the same rate limits. For example `GetTweets` using `FetchTweets` to get tweets. `FetchTweets` returns up to 20 tweets, so if you set `GetTweets` to fetch 150 tweets it will make 8 requests to `FetchTweets` (150/20=7.5 ~ 8 requests).
+If under-hood `Fetch` method got the error, it will be passed to object `twitterscraper.TweetResult` and will stop further scraping. In methods that return `twitterscraper.TweetResult` you should check if `tweet.Error` is not `nil` before accessing the tweet content.
 
 ## Authentication
 
@@ -207,7 +213,7 @@ tweet, err := scraper.GetTweet("1328684389388185600")
 
 150 requests / 15 minutes
 
-`GetTweets` returns a channel with the specified number of user tweets. It’s using the `FetchTweets` method under the hood.
+`GetTweets` returns a channel with the specified number of user tweets. It’s using the `FetchTweets` method under the hood. Read how this method works in [Methods that returns channels](#methods-that-returns-channels).
 
 ```golang
 for tweet := range scraper.GetTweets(context.Background(), "taylorswift13", 50) {
@@ -229,7 +235,8 @@ tweets, cursor, err := scraper.FetchTweets("taylorswift13", 20, cursor)
 
 500 requests / 15 minutes
 
-`GetMediaTweets` returns a channel with the specified number of user tweets that contain media. It’s using the `FetchMediaTweets` method under the hood.
+`GetMediaTweets` returns a channel with the specified number of user tweets that contain media. It’s using the `FetchMediaTweets` method under the hood. Read how this method works in [Methods that returns channels](#methods-that-returns-channels).
+
 
 ```golang
 for tweet := range scraper.GetMediaTweets(context.Background(), "taylorswift13", 50) {
@@ -254,7 +261,8 @@ tweets, cursor, err := scraper.FetchMediaTweets("taylorswift13", 20, cursor)
 
 500 requests / 15 minutes
 
-`GetBookmarks` returns a channel with the specified number of bookmarked tweets. It’s using the `FetchBookmarks` method under the hood.
+`GetBookmarks` returns a channel with the specified number of bookmarked tweets. It’s using the `FetchBookmarks` method under the hood. Read how this method works in [Methods that returns channels](#methods-that-returns-channels).
+
 
 ```golang
 for tweet := range scraper.GetBookmarks(context.Background(), 50) {
@@ -279,7 +287,8 @@ tweets, cursor, err := scraper.FetchBookmarks(20, cursor)
 
 500 requests / 15 minutes
 
-`GetHomeTweets` returns a channel with the specified number of latest home tweets. It’s using the `FetchHomeTweets` method under the hood.
+`GetHomeTweets` returns a channel with the specified number of latest home tweets. It’s using the `FetchHomeTweets` method under the hood. Read how this method works in [Methods that returns channels](#methods-that-returns-channels).
+
 
 ```golang
 for tweet := range scraper.GetHomeTweets(context.Background(), 50) {
@@ -304,7 +313,8 @@ tweets, cursor, err := scraper.FetchHomeTweets(20, cursor)
 
 500 requests / 15 minutes
 
-`GetForYouTweets` returns a channel with the specified number of for you home tweets. It’s using the `FetchForYouTweets` method under the hood.
+`GetForYouTweets` returns a channel with the specified number of for you home tweets. It’s using the `FetchForYouTweets` method under the hood. Read how this method works in [Methods that returns channels](#methods-that-returns-channels).
+
 
 ```golang
 for tweet := range scraper.GetForYouTweets(context.Background(), 50) {
@@ -329,7 +339,8 @@ tweets, cursor, err := scraper.FetchForYouTweets(20, cursor)
 
 150 requests / 15 minutes
 
-`SearchTweets` returns a channel with the specified number of tweets that contain media. It’s using the `FetchSearchTweets` method under the hood.
+`SearchTweets` returns a channel with the specified number of tweets that contain media. It’s using the `FetchSearchTweets` method under the hood. Read how this method works in [Methods that returns channels](#methods-that-returns-channels).
+
 
 ```golang
 for tweet := range scraper.SearchTweets(context.Background(),
@@ -372,7 +383,8 @@ profile, err := scraper.GetProfile("taylorswift13")
 
 150 requests / 15 minutes
 
-`SearchProfiles` returns a channel with the specified number of tweets that contain media. It’s using the `FetchSearchProfiles` method under the hood.
+`SearchProfiles` returns a channel with the specified number of tweets that contain media. It’s using the `FetchSearchProfiles` method under the hood. Read how this method works in [Methods that returns channels](#methods-that-returns-channels).
+
 
 ```golang
 for profile := range scraper.SearchProfiles(context.Background(), "Twitter", 50) {
