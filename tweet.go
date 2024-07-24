@@ -249,3 +249,91 @@ func (s *Scraper) DeleteRetweet(tweetId string) error {
 
 	return nil
 }
+
+func (s *Scraper) LikeTweet(tweetId string) error {
+	req, err := s.newRequest("POST", "https://twitter.com/i/api/graphql/lI07N6Otwv1PhnEgXILM7A/FavoriteTweet")
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("content-type", "application/json")
+	variables := map[string]interface{}{
+		"tweet_id": tweetId,
+	}
+	body := map[string]interface{}{
+		"variables": variables,
+		"queryId":   "lI07N6Otwv1PhnEgXILM7A",
+	}
+
+	b, _ := json.Marshal(body)
+	req.Body = io.NopCloser(bytes.NewReader(b))
+
+	var response struct {
+		Data struct {
+			FavoriteTweet string `json:"favorite_tweet"`
+		} `json:"data"`
+		Errors []struct {
+			Message string `json:"message"`
+			Code    int    `json:"code"`
+		} `json:"errors"`
+	}
+
+	err = s.RequestAPI(req, &response)
+	if err != nil {
+		return err
+	}
+
+	if len(response.Errors) > 0 && response.Errors[0].Code == 139 {
+		return errors.New("tweet already liked")
+	}
+
+	if response.Data.FavoriteTweet != "Done" {
+		return errors.New("unknown error")
+	}
+
+	return nil
+}
+
+func (s *Scraper) UnlikeTweet(tweetId string) error {
+	req, err := s.newRequest("POST", "https://twitter.com/i/api/graphql/ZYKSe-w7KEslx3JhSIk5LA/UnfavoriteTweet")
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("content-type", "application/json")
+	variables := map[string]interface{}{
+		"tweet_id": tweetId,
+	}
+	body := map[string]interface{}{
+		"variables": variables,
+		"queryId":   "ZYKSe-w7KEslx3JhSIk5LA",
+	}
+
+	b, _ := json.Marshal(body)
+	req.Body = io.NopCloser(bytes.NewReader(b))
+
+	var response struct {
+		Data struct {
+			UnfavoriteTweet string `json:"unfavorite_tweet"`
+		} `json:"data"`
+		Errors []struct {
+			Message string `json:"message"`
+			Code    int    `json:"code"`
+		} `json:"errors"`
+	}
+
+	err = s.RequestAPI(req, &response)
+	if err != nil {
+		return err
+	}
+
+	if len(response.Errors) > 0 && response.Errors[0].Code == 144 {
+		return errors.New("tweet already not liked")
+	}
+
+	if response.Data.UnfavoriteTweet != "Done" {
+		return errors.New("unknown error")
+	}
+
+	return nil
+}

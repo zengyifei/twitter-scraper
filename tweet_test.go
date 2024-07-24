@@ -94,3 +94,17 @@ func TestDeleteRetweet(t *testing.T) {
 		t.Error(err)
 	}
 }
+
+func TestLikeAndUnlikeTweet(t *testing.T) {
+	if skipAuthTest {
+		t.Skip("Skipping test due to environment variable")
+	}
+
+	tweetId := "1792634158977568997"
+	if err := testScraper.LikeTweet(tweetId); err != nil {
+		t.Error(err)
+	}
+	if err := testScraper.UnlikeTweet(tweetId); err != nil {
+		t.Error(err)
+	}
+}
