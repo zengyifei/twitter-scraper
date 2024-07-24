@@ -34,6 +34,7 @@ You can use this library to get tweets, profiles, and trends trivially.
   - [Get trends](#get-trends)
   - [Get following](#get-following)
   - [Get followers](#get-followers)
+  - [Get space](#get-space)
   - [Create tweet](#create-tweet)
   - [Delete tweet](#delete-tweet)
   - [Create retweet](#create-retweet)
@@ -237,7 +238,6 @@ tweets, cursor, err := scraper.FetchTweets("taylorswift13", 20, cursor)
 
 `GetMediaTweets` returns a channel with the specified number of user tweets that contain media. It’s using the `FetchMediaTweets` method under the hood. Read how this method works in [Methods that returns channels](#methods-that-returns-channels).
 
-
 ```golang
 for tweet := range scraper.GetMediaTweets(context.Background(), "taylorswift13", 50) {
     if tweet.Error != nil {
@@ -262,7 +262,6 @@ tweets, cursor, err := scraper.FetchMediaTweets("taylorswift13", 20, cursor)
 500 requests / 15 minutes
 
 `GetBookmarks` returns a channel with the specified number of bookmarked tweets. It’s using the `FetchBookmarks` method under the hood. Read how this method works in [Methods that returns channels](#methods-that-returns-channels).
-
 
 ```golang
 for tweet := range scraper.GetBookmarks(context.Background(), 50) {
@@ -289,7 +288,6 @@ tweets, cursor, err := scraper.FetchBookmarks(20, cursor)
 
 `GetHomeTweets` returns a channel with the specified number of latest home tweets. It’s using the `FetchHomeTweets` method under the hood. Read how this method works in [Methods that returns channels](#methods-that-returns-channels).
 
-
 ```golang
 for tweet := range scraper.GetHomeTweets(context.Background(), 50) {
     if tweet.Error != nil {
@@ -315,7 +313,6 @@ tweets, cursor, err := scraper.FetchHomeTweets(20, cursor)
 
 `GetForYouTweets` returns a channel with the specified number of for you home tweets. It’s using the `FetchForYouTweets` method under the hood. Read how this method works in [Methods that returns channels](#methods-that-returns-channels).
 
-
 ```golang
 for tweet := range scraper.GetForYouTweets(context.Background(), 50) {
     if tweet.Error != nil {
@@ -340,7 +337,6 @@ tweets, cursor, err := scraper.FetchForYouTweets(20, cursor)
 150 requests / 15 minutes
 
 `SearchTweets` returns a channel with the specified number of tweets that contain media. It’s using the `FetchSearchTweets` method under the hood. Read how this method works in [Methods that returns channels](#methods-that-returns-channels).
-
 
 ```golang
 for tweet := range scraper.SearchTweets(context.Background(),
@@ -385,7 +381,6 @@ profile, err := scraper.GetProfile("taylorswift13")
 
 `SearchProfiles` returns a channel with the specified number of tweets that contain media. It’s using the `FetchSearchProfiles` method under the hood. Read how this method works in [Methods that returns channels](#methods-that-returns-channels).
 
-
 ```golang
 for profile := range scraper.SearchProfiles(context.Background(), "Twitter", 50) {
     if profile.Error != nil {
@@ -429,6 +424,37 @@ users, cursor, err := scraper.FetchFollowing("Support", 20, cursor)
 ```golang
 var cursor string
 users, cursor, err := scraper.FetchFollowers("Support", 20, cursor)
+```
+
+### Get space
+
+> [!IMPORTANT]  
+> Requires authentication!
+
+500 requests / 15 minutes
+
+Use to retrvie data about space and it's participants. You can get up to 1000 participants of space. If method returns less, it's probably because listeners is anonymous.
+
+```golang
+space, err := scraper.GetSpace("space_id")
+```
+
+You can get `space_id` from space url which can be retrived from tweet. For example:
+
+```golang
+tweet, err := testScraper.GetTweet("1815884577040445599")
+if err != nil {
+    t.Fatal(err)
+}
+
+var spaceId string
+spaceUrl := tweet.URLs[0] // https://twitter.com/i/spaces/1mnxeAMPEqqxX
+
+if strings.HasPrefix(spaceUrl, "https://twitter.com/i/spaces/") {
+    spaceId = strings.Replace(spaceUrl, "https://twitter.com/i/spaces/", "", 1) // 1mnxeAMPEqqxX
+}
+
+space, err := scraper.GetSpace(spaceId)
 ```
 
 ### Create tweet

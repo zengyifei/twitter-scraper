@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.0.9
+
+24.07.2024
+
+- Added method `GetSpace`
+
 ## v0.0.8
 
 09.07.2024
