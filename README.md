@@ -35,6 +35,8 @@ You can use this library to get tweets, profiles, and trends trivially.
   - [Get following](#get-following)
   - [Get followers](#get-followers)
   - [Get space](#get-space)
+  - [Like tweet](#like-tweet)
+  - [Unlike tweet](#unlike-tweet)
   - [Create tweet](#create-tweet)
   - [Delete tweet](#delete-tweet)
   - [Create retweet](#create-retweet)
@@ -455,6 +457,28 @@ if strings.HasPrefix(spaceUrl, "https://twitter.com/i/spaces/") {
 }
 
 space, err := scraper.GetSpace(spaceId)
+```
+
+### Like tweet
+
+> [!IMPORTANT]  
+> Requires authentication!
+
+500 requests / 15 minutes (combined with `UnlikeTweet` method)
+
+```golang
+err := scraper.LikeTweet("tweet_id")
+```
+
+### Unlike tweet
+
+> [!IMPORTANT]  
+> Requires authentication!
+
+500 requests / 15 minutes (combined with `LikeTweet` method)
+
+```golang
+err := scraper.UnlikeTweet("tweet_id")
 ```
 
 ### Create tweet

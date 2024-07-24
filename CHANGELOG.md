@@ -5,6 +5,7 @@
 24.07.2024
 
 - Added method `GetSpace`
+- Added methods `LikeTweet`, `UnlikeTweet`
 
 ## v0.0.8
 
