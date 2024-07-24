@@ -232,7 +232,7 @@ func (user *spaceUser) parse() *SpaceUser {
 		Name:        user.DisplayName,
 		Avatar:      user.AvatarURL,
 		IsVerified:  user.IsVerified,
-		ConnectedAt: time.UnixMilli(user.Start),
+		ConnectedAt: time.Unix(user.Start/1000, 0),
 	}
 
 	return result
@@ -249,10 +249,10 @@ func (space *space) parse() *Space {
 			TotalCount:   space.Data.AudioSpace.Metadata.TotalLiveListeners,
 			CurrentCount: space.Data.AudioSpace.Participants.Total,
 		},
-		CreatedAt:      time.UnixMilli(space.Data.AudioSpace.Metadata.CreatedAt),
-		ScheduledStart: time.UnixMilli(space.Data.AudioSpace.Metadata.ScheduledStart),
-		StartedAt:      time.UnixMilli(space.Data.AudioSpace.Metadata.StartedAt),
-		UpdatedAt:      time.UnixMilli(space.Data.AudioSpace.Metadata.UpdatedAt),
+		CreatedAt:      time.Unix(space.Data.AudioSpace.Metadata.CreatedAt/1000, 0),
+		ScheduledStart: time.Unix(space.Data.AudioSpace.Metadata.ScheduledStart/1000, 0),
+		StartedAt:      time.Unix(space.Data.AudioSpace.Metadata.StartedAt/1000, 0),
+		UpdatedAt:      time.Unix(space.Data.AudioSpace.Metadata.UpdatedAt/1000, 0),
 	}
 
 	for _, topic := range space.Data.AudioSpace.Metadata.Topics {
