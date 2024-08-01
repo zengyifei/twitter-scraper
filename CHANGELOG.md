@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.0.10
+
+01.08.2024
+
+- Added method `GetTweetReplies`
+
 ## v0.0.9
 
 24.07.2024
