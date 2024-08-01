@@ -2,8 +2,6 @@ package twitterscraper_test
 
 import (
 	"testing"
-
-	twitterscraper "github.com/imperatrona/twitter-scraper"
 )
 
 func TestGetReplies(t *testing.T) {
