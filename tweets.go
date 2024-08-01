@@ -199,7 +199,7 @@ func (s *Scraper) GetTweet(id string) (*Tweet, error) {
 			return nil, err
 		}
 
-		tweets := conversation.parse()
+		tweets, _ := conversation.parse(id)
 		for _, tweet := range tweets {
 			if tweet.ID == id {
 				return tweet, nil

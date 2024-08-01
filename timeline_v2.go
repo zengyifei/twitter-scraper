@@ -2,6 +2,7 @@ package twitterscraper
 
 import (
 	"strconv"
+	"strings"
 )
 
 type tweet struct {
@@ -74,12 +75,16 @@ func (result *userResult) parse() Profile {
 }
 
 type item struct {
-	Item struct {
+	EntryID string `json:"entryId"`
+	Item    struct {
 		ItemContent struct {
+			ItemType         string `json:"itemType"`
 			TweetDisplayType string `json:"tweetDisplayType"`
 			TweetResults     struct {
 				Result result `json:"result"`
 			} `json:"tweet_results"`
+			CursorType string `json:"cursorType"`
+			Value      string `json:"value"`
 		} `json:"itemContent"`
 	} `json:"item"`
 }
@@ -90,6 +95,7 @@ type entry struct {
 		Value       string `json:"value"`
 		Items       []item `json:"items"`
 		ItemContent struct {
+			ItemType         string `json:"itemType"`
 			TweetDisplayType string `json:"tweetDisplayType"`
 			TweetResults     struct {
 				Result result `json:"result"`
@@ -98,6 +104,8 @@ type entry struct {
 			UserResults     struct {
 				Result userResult `json:"result"`
 			} `json:"user_results"`
+			CursorType string `json:"cursorType"`
+			Value      string `json:"value"`
 		} `json:"itemContent"`
 	} `json:"content"`
 }
@@ -221,16 +229,18 @@ type threadedConversation struct {
 	Data struct {
 		ThreadedConversationWithInjectionsV2 struct {
 			Instructions []struct {
-				Type    string  `json:"type"`
-				Entries []entry `json:"entries"`
-				Entry   entry   `json:"entry"`
+				Type        string  `json:"type"`
+				Entry       entry   `json:"entry"`
+				Entries     []entry `json:"entries"`
+				ModuleItems []item  `json:"moduleItems"`
 			} `json:"instructions"`
 		} `json:"threaded_conversation_with_injections_v2"`
 	} `json:"data"`
 }
 
-func (conversation *threadedConversation) parse() []*Tweet {
+func (conversation *threadedConversation) parse(focalTweetID string) ([]*Tweet, []*ThreadCursor) {
 	var tweets []*Tweet
+	var cursors []*ThreadCursor
 	for _, instruction := range conversation.Data.ThreadedConversationWithInjectionsV2.Instructions {
 		for _, entry := range instruction.Entries {
 			if entry.Content.ItemContent.TweetResults.Result.Typename == "Tweet" || entry.Content.ItemContent.TweetResults.Result.Typename == "TweetWithVisibilityResults" {
@@ -241,6 +251,16 @@ func (conversation *threadedConversation) parse() []*Tweet {
 					tweets = append(tweets, tweet)
 				}
 			}
+
+			if entry.Content.ItemContent.CursorType != "" && entry.Content.ItemContent.Value != "" {
+				cursors = append(cursors, &ThreadCursor{
+					FocalTweetID: focalTweetID,
+					ThreadID:     focalTweetID,
+					Cursor:       entry.Content.ItemContent.Value,
+					CursorType:   entry.Content.ItemContent.CursorType,
+				})
+			}
+
 			for _, item := range entry.Content.Items {
 				if item.Item.ItemContent.TweetResults.Result.Typename == "Tweet" || item.Item.ItemContent.TweetResults.Result.Typename == "TweetWithVisibilityResults" {
 					if tweet := item.Item.ItemContent.TweetResults.Result.parse(); tweet != nil {
@@ -250,9 +270,56 @@ func (conversation *threadedConversation) parse() []*Tweet {
 						tweets = append(tweets, tweet)
 					}
 				}
+
+				if item.Item.ItemContent.CursorType != "" && item.Item.ItemContent.Value != "" {
+					threadID := ""
+
+					entryId := strings.Split(item.EntryID, "-")
+					if len(entryId) > 1 && entryId[0] == "conversationthread" {
+						if i, _ := strconv.Atoi(entryId[1]); i != 0 {
+							threadID = entryId[1]
+						}
+					}
+
+					cursors = append(cursors, &ThreadCursor{
+						FocalTweetID: focalTweetID,
+						ThreadID:     threadID,
+						Cursor:       item.Item.ItemContent.Value,
+						CursorType:   item.Item.ItemContent.CursorType,
+					})
+				}
+			}
+		}
+		for _, item := range instruction.ModuleItems {
+			if item.Item.ItemContent.TweetResults.Result.Typename == "Tweet" || item.Item.ItemContent.TweetResults.Result.Typename == "TweetWithVisibilityResults" {
+				if tweet := item.Item.ItemContent.TweetResults.Result.parse(); tweet != nil {
+					if item.Item.ItemContent.TweetDisplayType == "SelfThread" {
+						tweet.IsSelfThread = true
+					}
+					tweets = append(tweets, tweet)
+				}
+			}
+
+			if item.Item.ItemContent.CursorType != "" && item.Item.ItemContent.Value != "" {
+				threadID := ""
+
+				entryId := strings.Split(item.EntryID, "-")
+				if len(entryId) > 1 && entryId[0] == "conversationthread" {
+					if i, _ := strconv.Atoi(entryId[1]); i != 0 {
+						threadID = entryId[1]
+					}
+				}
+
+				cursors = append(cursors, &ThreadCursor{
+					FocalTweetID: focalTweetID,
+					ThreadID:     threadID,
+					Cursor:       item.Item.ItemContent.Value,
+					CursorType:   item.Item.ItemContent.CursorType,
+				})
 			}
 		}
 	}
+
 	for _, tweet := range tweets {
 		if tweet.InReplyToStatusID != "" {
 			for _, parentTweet := range tweets {
@@ -273,7 +340,7 @@ func (conversation *threadedConversation) parse() []*Tweet {
 			}
 		}
 	}
-	return tweets
+	return tweets, cursors
 }
 
 type tweetResult struct {
