@@ -207,6 +207,37 @@ func (timeline *bookmarksTimelineV2) parseTweets() ([]*Tweet, string) {
 	return tweets, cursor
 }
 
+type retweetersTimelineV2 struct {
+	Data struct {
+		RetweetersTimeline struct {
+			Timeline struct {
+				Instructions []struct {
+					Type    string  `json:"type"`
+					Entries []entry `json:"entries"`
+				} `json:"instructions"`
+			} `json:"timeline"`
+		} `json:"retweeters_timeline"`
+	} `json:"data"`
+}
+
+func (timeline *retweetersTimelineV2) parseUsers() ([]*Profile, string) {
+	var cursor string
+	var users []*Profile
+	for _, instruction := range timeline.Data.RetweetersTimeline.Timeline.Instructions {
+		for _, entry := range instruction.Entries {
+			if entry.Content.CursorType == "Bottom" {
+				cursor = entry.Content.Value
+				continue
+			}
+			if entry.Content.ItemContent.UserResults.Result.Typename == "User" {
+				user := entry.Content.ItemContent.UserResults.Result.parse()
+				users = append(users, &user)
+			}
+		}
+	}
+	return users, cursor
+}
+
 func (timeline *timelineV2) parseUsers() ([]*Profile, string) {
 	var cursor string
 	var users []*Profile
