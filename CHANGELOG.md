@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.0.11
+
+05.08.2024
+
+- Added method `GetTweetRetweeters`
+
 ## v0.0.10
 
 01.08.2024

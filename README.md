@@ -23,6 +23,7 @@ You can use this library to get tweets, profiles, and trends trivially.
 - [Methods](#methods)
   - [Get tweet](#get-tweet)
   - [Get tweet replies](#get-tweet-replies)
+  - [Get tweet retweeters](#get-tweet-retweeters)
   - [Get user tweets](#get-user-tweets)
   - [Get user medias](#get-user-medias)
   - [Get bookmarks](#get-bookmarks)
@@ -227,7 +228,7 @@ tweets, cursors, err := scraper.GetTweetReplies("1328684389388185600", cursor)
 To get all replies and replies of replies for tweet you can iterate for all cursors. To get only direct replies check if `cursor.ThreadID` is equal your tweet id.
 
 ```golang
-tweets, cursors, err := testScraper.GetTweetReplies("1328684389388185600", "")
+tweets, cursors, err := scraper.GetTweetReplies("1328684389388185600", "")
 if err != nil {
     panic(err)
 }
@@ -236,7 +237,7 @@ for {
     if len(cursors) > 0 {
         var cursor *twitterscraper.ThreadCursor
         cursor, cursors = cursors[0], cursors[1:]
-        moreTweets, moreCursors, err := testScraper.GetTweetReplies(tweetId, cursor.Cursor)
+        moreTweets, moreCursors, err := scraper.GetTweetReplies(tweetId, cursor.Cursor)
         if err != nil {
             // you can check here if rate limited, await and repeat request
             panic(err)
@@ -249,6 +250,17 @@ for {
         break
     }
 }
+```
+
+### Get tweet retweeters
+
+500 requests / 15 minutes
+
+Returns a list of users who have retweeted the tweet.
+
+```golang
+var cursor string
+retweeters, cursor, err := scraper.GetTweetRetweeters("1328684389388185600", 20, cursor)
 ```
 
 ### Get user tweets
