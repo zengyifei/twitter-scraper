@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.0.12
+
+09.08.2024
+
+- Added method `GetProfileByID`
+
 ## v0.0.11
 
 05.08.2024

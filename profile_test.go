@@ -1,7 +1,6 @@
 package twitterscraper_test
 
 import (
-	"fmt"
 	"strings"
 	"testing"
 	"time"
@@ -116,15 +115,15 @@ func TestGetProfileErrorSuspended(t *testing.T) {
 	if err == nil {
 		t.Error("Expected Error, got success")
 	} else {
-		if !strings.Contains(err.Error(), "Missing LdapGroup(visibility-custom-suspension)") {
-			t.Error("Expected error to contain 'Missing LdapGroup(visibility-custom-suspension)', got", err)
+		if !strings.Contains(err.Error(), "suspended") {
+			t.Error("Expected error to contain 'suspended', got", err)
 		}
 	}
 }
 
 func TestGetProfileErrorNotFound(t *testing.T) {
 	neUser := "sample3123131"
-	expectedError := fmt.Sprintf("User '%s' not found", neUser)
+	expectedError := "user not found"
 	_, err := testScraper.GetProfile(neUser)
 	if err == nil {
 		t.Error("Expected Error, got success")
@@ -132,6 +131,17 @@ func TestGetProfileErrorNotFound(t *testing.T) {
 		if err.Error() != expectedError {
 			t.Errorf("Expected error '%s', got '%s'", expectedError, err)
 		}
+	}
+}
+
+func TestGetProfileByID(t *testing.T) {
+	profile, err := testScraper.GetProfileByID("1221221876849995777")
+	if err != nil {
+		t.Error(err)
+	}
+
+	if profile.Username != "tomdumont" {
+		t.Errorf("Expected username 'tomdumont', got '%s'", profile.Username)
 	}
 }
 

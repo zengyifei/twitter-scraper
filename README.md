@@ -32,6 +32,7 @@ You can use this library to get tweets, profiles, and trends trivially.
   - [Search tweets](#search-tweets)
   - [Search params](#search-params)
   - [Get profile](#get-profile)
+  - [Get profile by id](#get-profile-by-id)
   - [Search profile](#search-profile)
   - [Get trends](#get-trends)
   - [Get following](#get-following)
@@ -423,6 +424,14 @@ See [Rules and filtering](https://developer.twitter.com/en/docs/tweets/rules-and
 
 ```golang
 profile, err := scraper.GetProfile("taylorswift13")
+```
+
+### Get profile by id
+
+95 requests / 15 minutes
+
+```golang
+profile, err := scraper.GetProfileByID("17919972")
 ```
 
 ### Search profile
