@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strings"
 	"sync"
 	"time"
 )
@@ -42,8 +43,9 @@ type user struct {
 	Data struct {
 		User struct {
 			Result struct {
-				RestID string     `json:"rest_id"`
-				Legacy legacyUser `json:"legacy"`
+				RestID  string     `json:"rest_id"`
+				Legacy  legacyUser `json:"legacy"`
+				Message string     `json:"message"`
 			} `json:"result"`
 		} `json:"user"`
 	} `json:"data"`
@@ -91,11 +93,17 @@ func (s *Scraper) GetProfile(username string) (Profile, error) {
 	}
 
 	if len(jsn.Errors) > 0 && jsn.Data.User.Result.RestID == "" {
+		if strings.Contains(jsn.Errors[0].Message, "Missing LdapGroup(visibility-custom-suspension)") {
+			return Profile{}, fmt.Errorf("user is suspended")
+		}
 		return Profile{}, fmt.Errorf("%s", jsn.Errors[0].Message)
 	}
 
 	if jsn.Data.User.Result.RestID == "" {
-		return Profile{}, fmt.Errorf("rest_id not found")
+		if jsn.Data.User.Result.Message == "User is suspended" {
+			return Profile{}, fmt.Errorf("user is suspended")
+		}
+		return Profile{}, fmt.Errorf("user not found")
 	}
 	jsn.Data.User.Result.Legacy.IDStr = jsn.Data.User.Result.RestID
 
@@ -142,11 +150,17 @@ func (s *Scraper) GetProfileByID(userID string) (Profile, error) {
 	}
 
 	if len(jsn.Errors) > 0 && jsn.Data.User.Result.RestID == "" {
+		if strings.Contains(jsn.Errors[0].Message, "Missing LdapGroup(visibility-custom-suspension)") {
+			return Profile{}, fmt.Errorf("user is suspended")
+		}
 		return Profile{}, fmt.Errorf("%s", jsn.Errors[0].Message)
 	}
 
 	if jsn.Data.User.Result.RestID == "" {
-		return Profile{}, fmt.Errorf("rest_id not found")
+		if jsn.Data.User.Result.Message == "User is suspended" {
+			return Profile{}, fmt.Errorf("user is suspended")
+		}
+		return Profile{}, fmt.Errorf("user not found")
 	}
 	jsn.Data.User.Result.Legacy.IDStr = jsn.Data.User.Result.RestID
 
