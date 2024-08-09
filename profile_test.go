@@ -135,6 +135,17 @@ func TestGetProfileErrorNotFound(t *testing.T) {
 	}
 }
 
+func TestGetProfileByID(t *testing.T) {
+	profile, err := testScraper.GetProfileByID("1221221876849995777")
+	if err != nil {
+		t.Error(err)
+	}
+
+	if profile.Username != "tomdumont" {
+		t.Errorf("Expected username 'tomdumont', got '%s'", profile.Username)
+	}
+}
+
 func TestGetUserIDByScreenName(t *testing.T) {
 	userID, err := testScraper.GetUserIDByScreenName("Twitter")
 	if err != nil {
