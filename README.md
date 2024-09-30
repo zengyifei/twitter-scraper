@@ -286,6 +286,8 @@ var cursor string
 tweets, cursor, err := scraper.FetchTweets("taylorswift13", 20, cursor)
 ```
 
+To get tweets and replies use `GetTweetsAndReplies`, `FetchTweetsAndReplies` and `FetchTweetsAndRepliesByUserID` methods.
+
 ### Get user medias
 
 500 requests / 15 minutes

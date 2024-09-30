@@ -452,3 +452,18 @@ func TestGetForYouTweets(t *testing.T) {
 		t.Errorf("Expected tweets count=%v, got: %v", maxTweetsNbr, count)
 	}
 }
+
+func TestGetTweetsAndReplies(t *testing.T) {
+	if skipAuthTest {
+		t.Skip("Skipping test due to environment variable")
+	}
+
+	tweets, _, err := testScraper.FetchTweetsAndRepliesByUserID("17874544", 20, "")
+	if err != nil {
+		t.Error(err)
+	}
+
+	if len(tweets) < 1 {
+		t.Errorf("Got %d tweets", len(tweets))
+	}
+}

@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.0.13
+
+- Added methods `GetTweetsAndReplies`, `FetchTweetsAndReplies`, `FetchTweetsAndRepliesByUserID` thanks to @thewh1teagle
+
 ## v0.0.12
 
 09.08.2024
