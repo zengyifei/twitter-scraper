@@ -137,9 +137,17 @@ func TestLoginOpenAccount(t *testing.T) {
 	}
 
 	scraper := twitterscraper.New()
-	_, err := scraper.LoginOpenAccount()
+	if proxy != "" && proxyRequired {
+		err := scraper.SetProxy(proxy)
+		if err != nil {
+			panic(fmt.Sprintf("SetProxy() error = %v", err))
+		}
+	}
+	account, err := scraper.LoginOpenAccount()
 
 	if err != nil {
 		t.Fatalf("LoginOpenAccount() error = %v", err)
 	}
+
+	fmt.Printf("%#v", account)
 }
