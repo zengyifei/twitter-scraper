@@ -126,7 +126,7 @@ func (s *Scraper) getFlowToken(data map[string]interface{}) (string, error) {
 		return "", fmt.Errorf("auth error (%d): %v", info.Errors[0].Code, info.Errors[0].Message)
 	}
 
-	if info.Subtasks != nil && len(info.Subtasks) > 0 {
+	if len(info.Subtasks) > 0 {
 		if info.Subtasks[0].SubtaskID == "LoginEnterAlternateIdentifierSubtask" {
 			err = fmt.Errorf("auth error: %v", "LoginEnterAlternateIdentifierSubtask")
 		} else if info.Subtasks[0].SubtaskID == "LoginAcid" {
@@ -339,7 +339,7 @@ func (s *Scraper) LoginOpenAccount() (OpenAccount, error) {
 		return OpenAccount{}, err
 	}
 
-	if info.Subtasks != nil && len(info.Subtasks) > 0 {
+	if len(info.Subtasks) > 0 {
 		if info.Subtasks[0].SubtaskID == "OpenAccount" {
 			s.oAuthToken = info.Subtasks[0].OpenAccount.OAuthToken
 			s.oAuthSecret = info.Subtasks[0].OpenAccount.OAuthTokenSecret
