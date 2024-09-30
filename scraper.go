@@ -27,6 +27,7 @@ type Scraper struct {
 	oAuthToken     string
 	oAuthSecret    string
 	proxy          string
+	userAgent      string
 	searchMode     SearchMode
 	wg             sync.WaitGroup
 }
@@ -49,12 +50,14 @@ const (
 
 // default http client timeout
 const DefaultClientTimeout = 10 * time.Second
+const DefaultUserAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36"
 
 // New creates a Scraper object
 func New() *Scraper {
 	jar, _ := cookiejar.New(nil)
 	return &Scraper{
 		bearerToken: bearerToken,
+		userAgent:   DefaultUserAgent,
 		client: &http.Client{
 			Jar:     jar,
 			Timeout: DefaultClientTimeout,
@@ -168,4 +171,12 @@ func (s *Scraper) SetProxy(proxyAddr string) error {
 		return nil
 	}
 	return errors.New("only support http(s) or socks5 protocol")
+}
+
+func (s *Scraper) SetUserAgent(userAgent string) {
+	s.userAgent = userAgent
+}
+
+func (s *Scraper) GetUserAgent() string {
+	return s.userAgent
 }
