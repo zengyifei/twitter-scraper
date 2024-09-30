@@ -48,6 +48,7 @@ You can use this library to get tweets, profiles, and trends trivially.
   - [Create scheduled tweet](#create-scheduled-tweet)
   - [Delete scheduled tweet](#delete-scheduled-tweet)
   - [Upload media](#upload-media)
+  - [Account](#account)
 - [Connection](#connection)
   - [Proxy](#proxy)
   - [HTTP(s)](#https)
@@ -151,7 +152,7 @@ if !scraper.IsLoggedIn() {
 
 ### OpenAccount
 
-> [!WARNING]  
+> [!WARNING]
 > Deprecated. Nerfed by twitter, doesn't support new endpoints.
 
 `LoginOpenAccount` is now limited to one new account per month for IP address.
@@ -312,7 +313,7 @@ tweets, cursor, err := scraper.FetchMediaTweets("taylorswift13", 20, cursor)
 
 ### Get bookmarks
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > Requires authentication!
 
 500 requests / 15 minutes
@@ -337,7 +338,7 @@ tweets, cursor, err := scraper.FetchBookmarks(20, cursor)
 
 ### Get home tweets
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > Requires authentication!
 
 500 requests / 15 minutes
@@ -362,7 +363,7 @@ tweets, cursor, err := scraper.FetchHomeTweets(20, cursor)
 
 ### Get foryou tweets
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > Requires authentication!
 
 500 requests / 15 minutes
@@ -387,7 +388,7 @@ tweets, cursor, err := scraper.FetchForYouTweets(20, cursor)
 
 ### Search tweets
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > Requires authentication!
 
 150 requests / 15 minutes
@@ -438,7 +439,7 @@ profile, err := scraper.GetProfileByID("17919972")
 
 ### Search profile
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > Requires authentication!
 
 150 requests / 15 minutes
@@ -468,7 +469,7 @@ trends, err := scraper.GetTrends()
 
 ### Get following
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > Requires authentication!
 
 500 requests / 15 minutes
@@ -480,7 +481,7 @@ users, cursor, err := scraper.FetchFollowing("Support", 20, cursor)
 
 ### Get followers
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > Requires authentication!
 
 50 requests / 15 minutes
@@ -492,7 +493,7 @@ users, cursor, err := scraper.FetchFollowers("Support", 20, cursor)
 
 ### Get space
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > Requires authentication!
 
 500 requests / 15 minutes
@@ -523,7 +524,7 @@ space, err := scraper.GetSpace(spaceId)
 
 ### Like tweet
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > Requires authentication!
 
 500 requests / 15 minutes (combined with `UnlikeTweet` method)
@@ -534,7 +535,7 @@ err := scraper.LikeTweet("tweet_id")
 
 ### Unlike tweet
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > Requires authentication!
 
 500 requests / 15 minutes (combined with `LikeTweet` method)
@@ -545,7 +546,7 @@ err := scraper.UnlikeTweet("tweet_id")
 
 ### Create tweet
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > Requires authentication!
 
 ```golang
@@ -573,7 +574,7 @@ tweet, err = scraper.CreateTweet(twitterscraper.NewTweet{
 
 ### Delete tweet
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > Requires authentication!
 
 ```golang
@@ -582,7 +583,7 @@ err := testScraper.DeleteTweet("1810458885008105870");
 
 ### Create retweet
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > Requires authentication!
 
 Returns retweet id, which is not the same as source tweet id.
@@ -593,7 +594,7 @@ retweetId, err := testScraper.CreateRetweet("1792634158977568997");
 
 ### Delete retweet
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > Requires authentication!
 
 To delete retweet use source tweet id instead retweet id.
@@ -604,7 +605,7 @@ err := testScraper.DeleteRetweet("1792634158977568997");
 
 ### Get scheduled tweets
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > Requires authentication!
 
 500 requests / 15 minutes
@@ -615,7 +616,7 @@ tweets, err := scraper.FetchScheduledTweets()
 
 ### Create scheduled tweet
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > Requires authentication!
 
 500 requests / 15 minutes
@@ -630,7 +631,7 @@ tweets, err := scraper.CreateScheduledTweet(twitterscraper.TweetSchedule{
 
 ### Delete scheduled tweet
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > Requires authentication!
 
 500 requests / 15 minutes
@@ -641,7 +642,7 @@ err := scraper.DeleteScheduledTweet("123")
 
 ### Upload media
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > Requires authentication!
 
 50 requests / 15 minutes
@@ -650,6 +651,21 @@ Uploads photo, video or gif for further posting or scheduling. Expires in 24 hou
 
 ```golang
 media, err := scraper.UploadMedia("./files/movie.mp4")
+```
+
+### Account
+> Requires authentication!
+
+To get current account settings use `GetAccountSettings` method.
+
+```golang
+settings, err := scraper.GetAccountSettings()
+```
+
+If you use session with multiaccount you can use `GetAccountList` method to get slice of all accounts.
+
+```golang
+accounts, err := scraper.GetAccountList()
 ```
 
 ## Connection
