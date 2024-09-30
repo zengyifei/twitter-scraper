@@ -2,8 +2,11 @@
 
 ## v0.0.13
 
+01.10.2024
+
 - Added methods `GetTweetsAndReplies`, `FetchTweetsAndReplies`, `FetchTweetsAndRepliesByUserID` thanks to @thewh1teagle
 - Added methods `GetAccountSettings` and `GetAccountList` thanks to @thewh1teagle
+- Added methods `GetUserAgent` and `SetUserAgent`
 
 ## v0.0.12
 

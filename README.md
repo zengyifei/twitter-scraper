@@ -50,6 +50,7 @@ You can use this library to get tweets, profiles, and trends trivially.
   - [Upload media](#upload-media)
   - [Account](#account)
 - [Connection](#connection)
+  - [User-Agent](#user-agent)
   - [Proxy](#proxy)
   - [HTTP(s)](#https)
   - [SOCKS5](#socks5)
@@ -669,6 +670,26 @@ accounts, err := scraper.GetAccountList()
 ```
 
 ## Connection
+
+### User-Agent
+
+By default client uses user agent from mac google chrome v129.
+ 
+```
+Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36
+```
+
+You can set any client you want with method `SetUserAgent`.
+
+```golang
+scraper.SetUserAgent("user-agent")
+```
+
+To get current user agent use `GetUserAgent`.
+
+```golang
+agent := scraper.GetUserAgent()
+```
 
 ### Proxy
 
