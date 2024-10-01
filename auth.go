@@ -102,6 +102,7 @@ func (s *Scraper) getFlow(data map[string]interface{}) (*flow, error) {
 		return nil, err
 	}
 	req.Header = headers
+	s.setCSRFToken(req)
 
 	resp, err := s.client.Do(req)
 	if err != nil {
