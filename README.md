@@ -1,70 +1,70 @@
 # Twitter Scraper
 
-[![Go Reference](https://pkg.go.dev/badge/github.com/imperatrona/twitter-scraper.svg)](https://pkg.go.dev/github.com/imperatrona/twitter-scraper) [![Go](https://github.com/imperatrona/twitter-scraper/actions/workflows/go.yml/badge.svg?branch=master)](https://github.com/imperatrona/twitter-scraper/actions/workflows/go.yml)
+[![Go Reference](https://pkg.go.dev/badge/github.com/zengyifei/twitter-scraper.svg)](https://pkg.go.dev/github.com/zengyifei/twitter-scraper) [![Go](https://github.com/zengyifei/twitter-scraper/actions/workflows/go.yml/badge.svg?branch=master)](https://github.com/zengyifei/twitter-scraper/actions/workflows/go.yml)
 
-Twitter’s API is pricey and has lots of limitations. But their frontend has its own API, which was reverse-engineered by [@n0madic](https://github.com/n0madic) and maintained by [@imperatrona](https://github.com/imperatrona). Some endpoints require authentication, but it is easy to scale by buying new accounts and proxies.
+Twitter’s API is pricey and has lots of limitations. But their frontend has its own API, which was reverse-engineered by [@n0madic](https://github.com/n0madic) and maintained by [@zengyifei](https://github.com/zengyifei). Some endpoints require authentication, but it is easy to scale by buying new accounts and proxies.
 
 You can use this library to get tweets, profiles, and trends trivially.
 
 <details>
 <summary><h2>Table of Contents</h2></summary>
 
-- [Installation](#installation)
-- [Quick start](#quick-start)
-- [Rate limits](#rate-limits)
-- [Methods that returns channels](#methods-that-returns-channels)
-- [Authentication](#authentication)
-  - [Using cookies](#using-cookies)
-  - [Using AuthToken](#using-authtoken)
-  - [OpenAccount](#openaccount)
-  - [Login & Password](#login--password)
-  - [Check if login](#check-if-login)
-  - [Log out](#log-out)
-- [Methods](#methods)
-  - [Get tweet](#get-tweet)
-  - [Get tweet replies](#get-tweet-replies)
-  - [Get tweet retweeters](#get-tweet-retweeters)
-  - [Get user tweets](#get-user-tweets)
-  - [Get user medias](#get-user-medias)
-  - [Get bookmarks](#get-bookmarks)
-  - [Get home tweets](#get-home-tweets)
-  - [Get foryou tweets](#get-foryou-tweets)
-  - [Search tweets](#search-tweets)
-  - [Search params](#search-params)
-  - [Get profile](#get-profile)
-  - [Get profile by id](#get-profile-by-id)
-  - [Search profile](#search-profile)
-  - [Get trends](#get-trends)
-  - [Get following](#get-following)
-  - [Get followers](#get-followers)
-  - [Get space](#get-space)
-  - [Like tweet](#like-tweet)
-  - [Unlike tweet](#unlike-tweet)
-  - [Create tweet](#create-tweet)
-  - [Delete tweet](#delete-tweet)
-  - [Create retweet](#create-retweet)
-  - [Delete retweet](#delete-retweet)
-  - [Get scheduled tweets](#get-scheduled-tweets)
-  - [Create scheduled tweet](#create-scheduled-tweet)
-  - [Delete scheduled tweet](#delete-scheduled-tweet)
-  - [Upload media](#upload-media)
-  - [Account](#account)
-- [Connection](#connection)
-  - [User-Agent](#user-agent)
-  - [Proxy](#proxy)
-  - [HTTP(s)](#https)
-  - [SOCKS5](#socks5)
-  - [Delay](#delay)
-  - [Load timeline with tweet replies](#load-timeline-with-tweet-replies)
-- [Contributing](#contributing)
-  - [Testing](#testing)
+-   [Installation](#installation)
+-   [Quick start](#quick-start)
+-   [Rate limits](#rate-limits)
+-   [Methods that returns channels](#methods-that-returns-channels)
+-   [Authentication](#authentication)
+    -   [Using cookies](#using-cookies)
+    -   [Using AuthToken](#using-authtoken)
+    -   [OpenAccount](#openaccount)
+    -   [Login & Password](#login--password)
+    -   [Check if login](#check-if-login)
+    -   [Log out](#log-out)
+-   [Methods](#methods)
+    -   [Get tweet](#get-tweet)
+    -   [Get tweet replies](#get-tweet-replies)
+    -   [Get tweet retweeters](#get-tweet-retweeters)
+    -   [Get user tweets](#get-user-tweets)
+    -   [Get user medias](#get-user-medias)
+    -   [Get bookmarks](#get-bookmarks)
+    -   [Get home tweets](#get-home-tweets)
+    -   [Get foryou tweets](#get-foryou-tweets)
+    -   [Search tweets](#search-tweets)
+    -   [Search params](#search-params)
+    -   [Get profile](#get-profile)
+    -   [Get profile by id](#get-profile-by-id)
+    -   [Search profile](#search-profile)
+    -   [Get trends](#get-trends)
+    -   [Get following](#get-following)
+    -   [Get followers](#get-followers)
+    -   [Get space](#get-space)
+    -   [Like tweet](#like-tweet)
+    -   [Unlike tweet](#unlike-tweet)
+    -   [Create tweet](#create-tweet)
+    -   [Delete tweet](#delete-tweet)
+    -   [Create retweet](#create-retweet)
+    -   [Delete retweet](#delete-retweet)
+    -   [Get scheduled tweets](#get-scheduled-tweets)
+    -   [Create scheduled tweet](#create-scheduled-tweet)
+    -   [Delete scheduled tweet](#delete-scheduled-tweet)
+    -   [Upload media](#upload-media)
+    -   [Account](#account)
+-   [Connection](#connection)
+    -   [User-Agent](#user-agent)
+    -   [Proxy](#proxy)
+    -   [HTTP(s)](#https)
+    -   [SOCKS5](#socks5)
+    -   [Delay](#delay)
+    -   [Load timeline with tweet replies](#load-timeline-with-tweet-replies)
+-   [Contributing](#contributing)
+    -   [Testing](#testing)
 
 </details>
 
 ## Installation
 
 ```shell
-go get -u github.com/imperatrona/twitter-scraper
+go get -u github.com/zengyifei/twitter-scraper
 ```
 
 ## Quick start
@@ -75,7 +75,7 @@ package main
 import (
     "context"
     "fmt"
-    twitterscraper "github.com/imperatrona/twitter-scraper"
+    twitterscraper "github.com/zengyifei/twitter-scraper"
 )
 
 func main() {
@@ -655,6 +655,7 @@ media, err := scraper.UploadMedia("./files/movie.mp4")
 ```
 
 ### Account
+
 > Requires authentication!
 
 To get current account settings use `GetAccountSettings` method.
@@ -674,7 +675,7 @@ accounts, err := scraper.GetAccountList()
 ### User-Agent
 
 By default client uses user agent from mac google chrome v129.
- 
+
 ```
 Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36
 ```

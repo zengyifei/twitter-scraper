@@ -3,7 +3,7 @@ package twitterscraper_test
 import (
 	"testing"
 
-	twitterscraper "github.com/imperatrona/twitter-scraper"
+	twitterscraper "github.com/zengyifei/twitter-scraper"
 )
 
 var testDeleteTweetId string
