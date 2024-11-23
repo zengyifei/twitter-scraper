@@ -465,6 +465,7 @@ func (s *Scraper) SetAuthToken(token AuthToken) {
 	}}
 
 	s.SetCookies(cookies)
+	s.isLogged = true
 }
 
 func (s *Scraper) sign(method string, ref *url.URL) string {
